@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Play, Volume2, Maximize, Clock } from 'lucide-react'
 import type { Lesson } from '@/types'
+import { BRAND } from '@/lib/brand'
 
 interface VideoPlayerProps {
   lesson: Lesson
@@ -106,9 +107,9 @@ export default function VideoPlayer({ lesson }: VideoPlayerProps) {
       {/* Course branding */}
       <div className="absolute top-4 left-5 flex items-center gap-2">
         <div className="w-6 h-6 rounded-md bg-[#2563EB]/30 border border-[#2563EB]/40 flex items-center justify-center">
-          <span className="text-[#60A5FA] text-[8px] font-bold font-mono">AT</span>
+          <span className="text-[#60A5FA] text-[8px] font-bold font-mono">{BRAND.initials}</span>
         </div>
-        <span className="text-[#60A5FA]/70 text-xs font-medium">AlgoTrader Pro</span>
+        <span className="text-[#60A5FA]/70 text-xs font-medium">{BRAND.name}</span>
       </div>
 
       {/* Duration indicator */}

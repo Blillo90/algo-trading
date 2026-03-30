@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowRight, Target, BookOpen, Users, Star, TrendingUp } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { BRAND } from '@/lib/brand'
 
 export default function SobreNosotrosPage() {
   const stats = [
@@ -68,7 +69,7 @@ export default function SobreNosotrosPage() {
               no apostadores
             </h1>
             <p className="text-[#94A3B8] text-xl leading-relaxed mb-8">
-              AlgoTrader Pro nació de la convicción de que el trading puede enseñarse con rigor
+              {BRAND.name} nació de la convicción de que el trading puede enseñarse con rigor
               matemático, sin promesas exageradas y con resultados verificables. Formamos a traders
               que operan con sistemas, no con emociones.
             </p>
@@ -111,7 +112,7 @@ export default function SobreNosotrosPage() {
               <h2 className="font-syne font-bold text-3xl md:text-4xl text-white mb-6">
                 La historia detrás de{' '}
                 <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
-                  AlgoTrader Pro
+                  {BRAND.name}
                 </span>
               </h2>
               <div className="space-y-4 text-[#94A3B8] leading-relaxed">
@@ -128,7 +129,7 @@ export default function SobreNosotrosPage() {
                   orientado a resultados reales.
                 </p>
                 <p>
-                  AlgoTrader Pro es la respuesta a esa necesidad. Una plataforma de formación donde
+                  {BRAND.name} es la respuesta a esa necesidad. Una plataforma de formación donde
                   el rigor matemático y la aplicabilidad práctica van de la mano, diseñada para
                   traders que quieren operar con seriedad profesional.
                 </p>

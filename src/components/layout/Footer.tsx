@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { Hexagon, Twitter, Linkedin, Youtube, Mail, MapPin } from 'lucide-react'
+import Image from 'next/image'
+import { Twitter, Linkedin, Youtube, Mail, MapPin } from 'lucide-react'
+import { BRAND } from '@/lib/brand'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -24,18 +26,15 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4 group">
-              <div className="relative">
-                <Hexagon
-                  size={26}
-                  className="text-[#2563EB] fill-[#2563EB]/20"
-                  strokeWidth={1.5}
-                />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-[#60A5FA] font-mono">
-                  AT
-                </span>
-              </div>
+              <Image
+                src={BRAND.logo}
+                alt={BRAND.name}
+                width={26}
+                height={26}
+                className="flex-shrink-0"
+              />
               <span className="font-syne font-bold text-base bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
-                AlgoTrader Pro
+                {BRAND.name}
               </span>
             </Link>
             <p className="text-[#94A3B8] text-sm leading-relaxed mb-6 max-w-xs">
@@ -83,7 +82,7 @@ export default function Footer() {
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2 text-[#94A3B8] text-sm">
                 <Mail size={14} className="text-[#60A5FA] flex-shrink-0" />
-                hola@algotraderpro.es
+                {BRAND.email}
               </li>
               <li className="flex items-center gap-2 text-[#94A3B8] text-sm">
                 <MapPin size={14} className="text-[#60A5FA] flex-shrink-0" />
@@ -111,7 +110,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-[#2563EB]/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#4A5568] text-xs">
-            © {currentYear} AlgoTrader Pro. Todos los derechos reservados.
+            © {currentYear} {BRAND.name}. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
             {['Privacidad', 'Términos', 'Cookies'].map((label) => (

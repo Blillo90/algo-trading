@@ -19,8 +19,8 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AlgoTrader Pro — Formación en Trading Algorítmico',
-    template: '%s | AlgoTrader Pro',
+    default: 'RobotEdge — Formación en Trading Algorítmico',
+    template: '%s | RobotEdge',
   },
   description:
     'Aprende a construir, validar y desplegar sistemas de trading algorítmico con rigor cuantitativo. El programa más completo en español para traders sistemáticos.',
@@ -32,14 +32,15 @@ export const metadata: Metadata = {
     'sistemas de trading',
     'automatización trading',
     'gestión de riesgo',
+    'RobotEdge',
   ],
-  authors: [{ name: 'Alejandro Vidal' }],
+  authors: [{ name: 'RobotEdge' }],
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    url: 'https://algotraderpro.es',
-    siteName: 'AlgoTrader Pro',
-    title: 'AlgoTrader Pro — Formación en Trading Algorítmico',
+    url: 'https://robotedge.tech',
+    siteName: 'RobotEdge',
+    title: 'RobotEdge — Formación en Trading Algorítmico',
     description:
       'Construye sistemas de trading que operan con disciplina matemática. Formación profesional en trading algorítmico y cuantitativo.',
     images: [
@@ -47,13 +48,13 @@ export const metadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AlgoTrader Pro',
+        alt: 'RobotEdge',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AlgoTrader Pro — Formación en Trading Algorítmico',
+    title: 'RobotEdge — Formación en Trading Algorítmico',
     description:
       'Construye sistemas de trading con rigor cuantitativo. El programa más completo en español.',
     images: ['/og-image.jpg'],

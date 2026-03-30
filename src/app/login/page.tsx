@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, ArrowLeft, TrendingUp, Shield, Hexagon } from 'lucide-react'
+import Image from 'next/image'
+import { Eye, EyeOff, ArrowLeft, TrendingUp, Shield } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { BRAND } from '@/lib/brand'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -65,14 +67,9 @@ export default function LoginPage() {
         <div className="relative z-10">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-16">
-            <div className="relative">
-              <Hexagon size={28} className="text-[#2563EB] fill-[#2563EB]/20" strokeWidth={1.5} />
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#60A5FA] font-mono">
-                AT
-              </span>
-            </div>
+            <Image src={BRAND.logo} alt={BRAND.name} width={28} height={28} className="flex-shrink-0" />
             <span className="font-syne font-bold text-lg bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
-              AlgoTrader Pro
+              {BRAND.name}
             </span>
           </Link>
 
@@ -110,7 +107,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-[#4A5568] text-xs">
           <Shield size={12} />
-          Plataforma segura y cifrada · AlgoTrader Pro © 2025
+          Plataforma segura y cifrada · {BRAND.name} © {new Date().getFullYear()}
         </div>
       </div>
 

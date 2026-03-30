@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, LayoutDashboard, LogOut, Hexagon } from 'lucide-react'
+import Image from 'next/image'
+import { Menu, X, ChevronDown, LayoutDashboard, LogOut } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 import { BRAND } from '@/lib/brand'
@@ -48,17 +49,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative">
-            <Hexagon
-              size={28}
-              className="text-[#2563EB] fill-[#2563EB]/20 transition-all duration-300 group-hover:fill-[#2563EB]/40"
-              strokeWidth={1.5}
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#60A5FA] font-mono">
-              {BRAND.initials}
-            </span>
-          </div>
-          {/* TODO: reemplazar con <BrandLogo /> usando asset oficial autorizado */}
+          <Image
+            src={BRAND.logo}
+            alt={BRAND.name}
+            width={28}
+            height={28}
+            className="flex-shrink-0 transition-opacity duration-300 group-hover:opacity-80"
+            priority
+          />
           <span className="font-syne font-bold text-lg bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
             {BRAND.name}
           </span>
