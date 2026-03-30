@@ -3,35 +3,56 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { BRAND } from '@/lib/brand'
 
 const FAQS = [
   {
-    q: '¿Necesito experiencia previa en trading?',
-    a: 'No es necesaria experiencia en trading profesional, aunque tener nociones básicas de cómo funcionan los mercados ayuda a avanzar más rápido. Lo que sí recomendamos es tener conocimientos básicos de Python (variables, bucles, funciones), ya que el curso trabaja directamente con código desde el principio.',
+    q: '¿Necesito saber programar para empezar?',
+    a: 'Se recomienda tener nociones básicas de Python: variables, bucles y funciones. No es necesario ser desarrollador ni tener experiencia avanzada. El primer módulo incluye la configuración completa del entorno y repasa los conceptos de Python necesarios para el curso. Si nunca has programado, te recomendamos dedicar una o dos semanas a un curso introductorio de Python antes de empezar.',
   },
   {
-    q: '¿Cuánto tiempo necesito dedicar?',
-    a: 'Recomendamos dedicar entre 1 y 2 horas diarias durante 4 a 6 semanas para completar el curso a buen ritmo. No hay plazos ni caducidad: el contenido está disponible de por vida y puedes avanzar según tu disponibilidad.',
+    q: '¿El curso sirve si soy principiante en trading?',
+    a: 'El curso parte desde los fundamentos del trading cuantitativo y no asume experiencia previa en trading activo. Sin embargo, tener una noción básica de qué son los mercados financieros y cómo funciona una operación de compra/venta facilita el aprendizaje desde el primer módulo. Si eres principiante absoluto, el curso es viable con algo de paciencia adicional en los primeros módulos.',
+  },
+  {
+    q: '¿Se garantizan beneficios o resultados en el trading?',
+    a: 'No. El curso no promete rentabilidades, beneficios garantizados ni resultados específicos. El trading con instrumentos financieros implica riesgo real de pérdida de capital. Lo que enseñamos es un proceso riguroso de diseño, validación y gestión de riesgo. Los resultados dependen del trabajo del alumno, de su disciplina en la ejecución y de la gestión responsable del riesgo.',
+  },
+  {
+    q: '¿¿Voy a aprender a validar mis estrategias con backtesting?',
+    a: 'Sí, es uno de los pilares del programa. El módulo de backtesting cubre el proceso completo: desde la preparación de datos hasta el walk-forward analysis y el out-of-sample testing. Se explican en detalle los sesgos más comunes —look-ahead bias, overfitting, curva-fitting— y cómo construir un proceso de validación que sea estadísticamente robusto.',
+  },
+  {
+    q: '¿Esto es trading manual o trading automatizado?',
+    a: 'Automatizado. El objetivo del curso es construir sistemas que ejecuten operaciones de forma autónoma siguiendo reglas definidas, sin necesidad de intervención manual constante. Aprendes a diseñar la lógica, validarla con datos y desplegarla conectada a la API de un broker real. El curso no enseña análisis técnico subjetivo ni trading discrecional.',
+  },
+  {
+    q: '¿Cómo accedo al contenido después de la compra?',
+    a: 'Inmediatamente después de completar el pago recibes las credenciales de acceso a la plataforma. El contenido está organizado por módulos y lecciones, con vídeos, recursos descargables y ejercicios prácticos. Puedes avanzar a tu ritmo y el acceso es de por vida, incluyendo todas las actualizaciones futuras.',
+  },
+  {
+    q: '¿Hay recursos descargables o materiales de práctica?',
+    a: 'Sí. Cada lección incluye recursos adicionales según corresponda: notebooks de Python con el código completo, PDFs con resúmenes de los conceptos clave, checklists de validación y ejemplos de código funcional. El objetivo es que puedas replicar y adaptar cada ejercicio a tus propias ideas de estrategia.',
+  },
+  {
+    q: '¿Cuánto tiempo necesito dedicar cada semana?',
+    a: 'Recomendamos entre 1 y 2 horas diarias durante 4 a 6 semanas para completar el curso a un ritmo cómodo y sin saltarse conceptos. El contenido no caduca y está disponible de por vida, por lo que puedes adaptarlo completamente a tu disponibilidad.',
   },
   {
     q: '¿Qué herramientas y software necesito?',
-    a: 'Python 3.x (completamente gratuito), Jupyter Notebooks (gratis) y las bibliotecas que instalamos paso a paso en el módulo de configuración. Para el módulo de despliegue necesitarás una cuenta en un broker con API (Interactive Brokers o Alpaca como alternativa gratuita para empezar).',
+    a: 'Python 3.x (gratuito), Jupyter Notebooks (gratuito) y las bibliotecas del ecosistema de análisis cuantitativo que instalamos juntos en el módulo de configuración. Para el módulo de despliegue necesitarás una cuenta en un broker con API: Interactive Brokers para un entorno profesional o Alpaca como alternativa gratuita para empezar en modo paper trading.',
   },
   {
-    q: '¿Incluye soporte o comunidad?',
-    a: 'Sí. Al inscribirte obtienes acceso al grupo privado de Discord de AlgoTrader Pro, donde podrás hacer preguntas, compartir tus sistemas y recibir feedback. Además organizamos sesiones de Q&A en directo mensuales donde Alejandro responde preguntas en tiempo real.',
+    q: '¿Incluye soporte o comunidad con otros alumnos?',
+    a: 'Sí. Al inscribirte obtienes acceso al grupo privado donde podrás hacer preguntas, compartir tus sistemas y recibir feedback de otros alumnos y del equipo. Además organizamos sesiones de preguntas y respuestas en directo de forma periódica.',
   },
   {
-    q: '¿Hay alguna garantía de devolución?',
-    a: 'Sí, ofrecemos una garantía de satisfacción de 30 días. Si por cualquier razón el curso no cumple tus expectativas, te devolvemos el importe íntegro sin necesidad de justificación. Solo tienes que enviarnos un email dentro de los primeros 30 días tras la compra.',
+    q: '¿Hay garantía de devolución?',
+    a: 'Sí, ofrecemos una garantía de satisfacción de 30 días. Si el curso no cumple tus expectativas, te devolvemos el importe íntegro sin necesidad de justificación. Solo tienes que contactarnos dentro de los primeros 30 días desde la compra.',
   },
   {
-    q: '¿Cuándo se actualiza el contenido?',
-    a: 'El curso se actualiza periódicamente para reflejar cambios en herramientas, APIs de brokers y mejores prácticas del sector. Todas las actualizaciones futuras están incluidas sin coste adicional para los alumnos inscritos.',
-  },
-  {
-    q: '¿Obtengo un certificado al completar el curso?',
-    a: 'Sí. Al completar el 100% del contenido recibirás un certificado digital verificable de AlgoTrader Pro. Es un certificado de finalización que acredita las competencias adquiridas y puede añadirse a tu perfil de LinkedIn.',
+    q: '¿Obtengo un certificado al finalizar?',
+    a: 'Sí. Al completar el 100% del contenido recibes un certificado digital de finalización que acredita las competencias adquiridas y puede añadirse a tu perfil de LinkedIn.',
   },
 ]
 
@@ -136,10 +157,10 @@ export default function FAQ() {
         >
           <p className="text-[#94A3B8] text-sm mb-4">¿Tienes más preguntas?</p>
           <a
-            href="mailto:hola@algotraderpro.es"
+            href={`mailto:${BRAND.email}`}
             className="inline-flex items-center gap-2 text-[#60A5FA] hover:text-white transition-colors text-sm font-medium border-b border-[#2563EB]/40 hover:border-[#60A5FA] pb-0.5"
           >
-            Escríbenos a hola@algotraderpro.es
+            Escríbenos a {BRAND.email}
           </a>
         </motion.div>
       </div>

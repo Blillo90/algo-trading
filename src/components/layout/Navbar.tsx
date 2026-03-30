@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, LayoutDashboard, LogOut, Hexagon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
+import { BRAND } from '@/lib/brand'
 
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
@@ -54,11 +55,12 @@ export default function Navbar() {
               strokeWidth={1.5}
             />
             <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#60A5FA] font-mono">
-              AT
+              {BRAND.initials}
             </span>
           </div>
+          {/* TODO: reemplazar con <BrandLogo /> usando asset oficial autorizado */}
           <span className="font-syne font-bold text-lg bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
-            AlgoTrader Pro
+            {BRAND.name}
           </span>
         </Link>
 

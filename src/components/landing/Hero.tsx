@@ -141,8 +141,8 @@ export default function Hero() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#2563EB]/35 bg-[#2563EB]/10 text-[#60A5FA] text-sm font-medium mb-7"
           >
-            <span className="text-base">🚀</span>
-            Trading Sistemático Profesional
+            <span className="text-sm font-mono font-bold">⬡</span>
+            Formación en Trading Cuantitativo
           </motion.div>
 
           {/* H1 */}
@@ -152,9 +152,9 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold font-syne text-white leading-[1.1] mb-6"
           >
-            Domina los mercados con sistemas que{' '}
+            Opera con reglas y sistemas que{' '}
             <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
-              nunca duermen
+              aguantan los datos
             </span>
           </motion.h1>
 
@@ -165,8 +165,9 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-[#94A3B8] text-lg leading-relaxed mb-10 max-w-xl"
           >
-            Aprende a construir, validar y desplegar estrategias de trading algorítmico con rigor
-            cuantitativo. Del backtesting a producción, con Python y metodología profesional.
+            Aprende a diseñar, validar y automatizar estrategias de trading con rigor estadístico.
+            Sin improvisación, sin emociones. Con proceso, métricas y metodología cuantitativa
+            aplicada desde el primer módulo.
           </motion.p>
 
           {/* CTAs */}
@@ -180,7 +181,7 @@ export default function Hero() {
               href="/cursos"
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all duration-300 hover:-translate-y-0.5 text-base"
             >
-              Comenzar ahora
+              Ver el programa completo
               <ArrowRight size={18} />
             </Link>
             <Link
@@ -188,7 +189,7 @@ export default function Hero() {
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-transparent border border-[#2563EB]/40 text-[#60A5FA] font-semibold rounded-xl hover:bg-[#2563EB]/10 hover:border-[#2563EB]/70 transition-all duration-300 text-base"
             >
               <Play size={16} className="fill-[#60A5FA]" />
-              Ver el programa
+              Explorar el curso
             </Link>
           </motion.div>
 
@@ -202,7 +203,7 @@ export default function Hero() {
             {[
               { value: '847', label: 'alumnos activos' },
               { value: '4.9★', label: 'valoración media' },
-              { value: '2025', label: 'actualizado' },
+              { value: '100%', label: 'metodología cuantitativa' },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-1.5">
                 {i > 0 && <span className="text-[#1B3A5C]">|</span>}
