@@ -31,9 +31,7 @@ export default function LoginPage() {
     }
     setIsLoading(true)
     setError('')
-    // Simulate slight delay for UX
-    await new Promise((res) => setTimeout(res, 600))
-    const result = login(email, password)
+    const result = await login(email, password)
     if (result.success) {
       router.push('/dashboard')
     } else {
@@ -140,17 +138,6 @@ export default function LoginPage() {
               <h1 className="font-syne font-bold text-3xl text-white">Bienvenido de nuevo</h1>
               <p className="text-[#94A3B8] mt-2 text-sm">
                 Inicia sesión para continuar con tu formación.
-              </p>
-            </div>
-
-            {/* Demo hint */}
-            <div className="bg-[#2563EB]/10 border border-[#2563EB]/25 rounded-xl p-4 mb-8">
-              <p className="text-[#60A5FA] text-xs font-semibold mb-1">Credenciales de demo:</p>
-              <p className="text-[#94A3B8] text-xs font-mono">
-                usuario1@demo.com / password123
-              </p>
-              <p className="text-[#94A3B8] text-xs font-mono">
-                usuario2@demo.com / password123
               </p>
             </div>
 

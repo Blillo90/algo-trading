@@ -1,41 +1,89 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { CourseProgress, LessonProgress, Course } from '@/types'
-import { INITIAL_PROGRESS, STORAGE_KEY } from '@/data/progress'
-
-function loadProgress(): CourseProgress[] {
-  if (typeof window === 'undefined') return INITIAL_PROGRESS
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      return JSON.parse(stored) as CourseProgress[]
-    }
-  } catch {
-    // corrupted data
-  }
-  return INITIAL_PROGRESS
-}
-
-function saveProgress(data: CourseProgress[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-  } catch {
-    // ignore
-  }
-}
+import { supabase } from '@/lib/supabase/client'
 
 export function useProgress() {
-  const [allProgress, setAllProgress] = useState<CourseProgress[]>(INITIAL_PROGRESS)
+  const [allProgress, setAllProgress] = useState<CourseProgress[]>([])
+
+  // Tracks the last-accessed lesson per course to prevent redundant writes.
+  // Using a ref avoids triggering re-renders and breaks the infinite loop:
+  //   setLastAccessedLesson → setState → new callback ref → useEffect fires again
+  const lastAccessedRef = useRef<Record<string, string>>({})
+
+  // Store the current userId so mutation helpers can use it without extra getSession calls
+  const userIdRef = useRef<string | null>(null)
 
   useEffect(() => {
-    setAllProgress(loadProgress())
-  }, [])
+    let cancelled = false
 
-  const persist = useCallback((updated: CourseProgress[]) => {
-    setAllProgress(updated)
-    saveProgress(updated)
+    async function load() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.user || cancelled) return
+
+      const userId = session.user.id
+      userIdRef.current = userId
+
+      const [{ data: lessonRows }, { data: courseRows }] = await Promise.all([
+        supabase
+          .from('lesson_progress')
+          .select('course_id, lesson_id, completed, completed_at')
+          .eq('user_id', userId),
+        supabase
+          .from('course_progress')
+          .select('course_id, last_accessed_lesson_id, last_accessed_at')
+          .eq('user_id', userId),
+      ])
+
+      if (cancelled) return
+
+      // Build CourseProgress[] from flat Supabase rows
+      const progressMap = new Map<string, CourseProgress>()
+
+      for (const row of lessonRows ?? []) {
+        if (!progressMap.has(row.course_id)) {
+          progressMap.set(row.course_id, {
+            courseId: row.course_id,
+            userId,
+            lessons: [],
+            startedAt: row.completed_at ?? new Date().toISOString(),
+          })
+        }
+        progressMap.get(row.course_id)!.lessons.push({
+          lessonId: row.lesson_id,
+          completed: row.completed,
+          completedAt: row.completed_at ?? undefined,
+        })
+      }
+
+      for (const row of courseRows ?? []) {
+        if (!progressMap.has(row.course_id)) {
+          progressMap.set(row.course_id, {
+            courseId: row.course_id,
+            userId,
+            lessons: [],
+            startedAt: row.last_accessed_at ?? new Date().toISOString(),
+          })
+        }
+        const prog = progressMap.get(row.course_id)!
+        if (row.last_accessed_lesson_id) {
+          prog.lastAccessedLessonId = row.last_accessed_lesson_id
+          // Seed the ref so the guard works from the very first render
+          lastAccessedRef.current[row.course_id] = row.last_accessed_lesson_id
+        }
+      }
+
+      setAllProgress(Array.from(progressMap.values()))
+    }
+
+    load()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const getCourseProgress = useCallback(
@@ -47,41 +95,85 @@ export function useProgress() {
 
   const markLessonComplete = useCallback(
     (userId: string, courseId: string, lessonId: string) => {
-      const updated = allProgress.map((p) => {
-        if (p.userId !== userId || p.courseId !== courseId) return p
-        const now = new Date().toISOString()
-        const exists = p.lessons.find((l) => l.lessonId === lessonId)
-        const lessons: LessonProgress[] = exists
-          ? p.lessons.map((l) =>
-              l.lessonId === lessonId ? { ...l, completed: true, completedAt: now } : l
-            )
-          : [...p.lessons, { lessonId, completed: true, completedAt: now }]
-        return { ...p, lessons, lastAccessedLessonId: lessonId }
+      const now = new Date().toISOString()
+
+      // Optimistic local update
+      setAllProgress((prev) => {
+        const exists = prev.find((p) => p.userId === userId && p.courseId === courseId)
+        if (exists) {
+          return prev.map((p) => {
+            if (p.userId !== userId || p.courseId !== courseId) return p
+            const lessonEntry = p.lessons.find((l) => l.lessonId === lessonId)
+            const lessons: LessonProgress[] = lessonEntry
+              ? p.lessons.map((l) =>
+                  l.lessonId === lessonId ? { ...l, completed: true, completedAt: now } : l
+                )
+              : [...p.lessons, { lessonId, completed: true, completedAt: now }]
+            return { ...p, lessons, lastAccessedLessonId: lessonId }
+          })
+        }
+        return [
+          ...prev,
+          {
+            courseId,
+            userId,
+            lessons: [{ lessonId, completed: true, completedAt: now }],
+            lastAccessedLessonId: lessonId,
+            startedAt: now,
+          },
+        ]
       })
-      persist(updated)
+
+      // Async write — RLS ensures only the owner can write
+      supabase
+        .from('lesson_progress')
+        .upsert(
+          {
+            user_id: userId,
+            course_id: courseId,
+            lesson_id: lessonId,
+            completed: true,
+            completed_at: now,
+            last_accessed_at: now,
+          },
+          { onConflict: 'user_id,lesson_id' }
+        )
+        .then(({ error }) => {
+          if (error) console.error('[useProgress] markLessonComplete:', error.message)
+        })
     },
-    [allProgress, persist]
+    []
   )
 
   const markLessonIncomplete = useCallback(
     (userId: string, courseId: string, lessonId: string) => {
-      const updated = allProgress.map((p) => {
-        if (p.userId !== userId || p.courseId !== courseId) return p
-        const lessons = p.lessons.map((l) =>
-          l.lessonId === lessonId ? { lessonId, completed: false, completedAt: undefined } : l
-        )
-        return { ...p, lessons }
-      })
-      persist(updated)
+      // Optimistic local update
+      setAllProgress((prev) =>
+        prev.map((p) => {
+          if (p.userId !== userId || p.courseId !== courseId) return p
+          const lessons = p.lessons.map((l) =>
+            l.lessonId === lessonId ? { lessonId, completed: false, completedAt: undefined } : l
+          )
+          return { ...p, lessons }
+        })
+      )
+
+      supabase
+        .from('lesson_progress')
+        .update({ completed: false, completed_at: null, last_accessed_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('lesson_id', lessonId)
+        .then(({ error }) => {
+          if (error) console.error('[useProgress] markLessonIncomplete:', error.message)
+        })
     },
-    [allProgress, persist]
+    []
   )
 
   const isLessonCompleted = useCallback(
     (userId: string, courseId: string, lessonId: string): boolean => {
       const progress = allProgress.find((p) => p.userId === userId && p.courseId === courseId)
-      if (!progress) return false
-      return progress.lessons.find((l) => l.lessonId === lessonId)?.completed ?? false
+      return progress?.lessons.find((l) => l.lessonId === lessonId)?.completed ?? false
     },
     [allProgress]
   )
@@ -100,36 +192,49 @@ export function useProgress() {
 
   const setLastAccessedLesson = useCallback(
     (userId: string, courseId: string, lessonId: string) => {
-      const exists = allProgress.find((p) => p.userId === userId && p.courseId === courseId)
+      // Guard: skip if this lesson is already the last accessed (prevents infinite loop)
+      if (lastAccessedRef.current[courseId] === lessonId) return
+      lastAccessedRef.current[courseId] = lessonId
 
-      // Guard: si ya está registrada esta lección como última visitada, no escribir estado.
-      // Sin este guard se produce un bucle infinito:
-      //   persist() → setAllProgress() → allProgress cambia → nueva referencia de
-      //   setLastAccessedLesson → useEffect en CourseViewerInner se dispara → vuelta al inicio.
-      if (exists?.lastAccessedLessonId === lessonId) return
+      const now = new Date().toISOString()
 
-      let updated: CourseProgress[]
-      if (exists) {
-        updated = allProgress.map((p) =>
-          p.userId === userId && p.courseId === courseId
-            ? { ...p, lastAccessedLessonId: lessonId }
-            : p
-        )
-      } else {
-        updated = [
-          ...allProgress,
+      setAllProgress((prev) => {
+        const exists = prev.find((p) => p.userId === userId && p.courseId === courseId)
+        if (exists) {
+          return prev.map((p) =>
+            p.userId === userId && p.courseId === courseId
+              ? { ...p, lastAccessedLessonId: lessonId }
+              : p
+          )
+        }
+        return [
+          ...prev,
           {
             courseId,
             userId,
-            lessons: [{ lessonId, completed: false }],
+            lessons: [],
             lastAccessedLessonId: lessonId,
-            startedAt: new Date().toISOString(),
+            startedAt: now,
           },
         ]
-      }
-      persist(updated)
+      })
+
+      supabase
+        .from('course_progress')
+        .upsert(
+          {
+            user_id: userId,
+            course_id: courseId,
+            last_accessed_lesson_id: lessonId,
+            last_accessed_at: now,
+          },
+          { onConflict: 'user_id,course_id' }
+        )
+        .then(({ error }) => {
+          if (error) console.error('[useProgress] setLastAccessedLesson:', error.message)
+        })
     },
-    [allProgress, persist]
+    []
   )
 
   const getTotalStats = useCallback(
