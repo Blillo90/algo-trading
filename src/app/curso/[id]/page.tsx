@@ -112,10 +112,15 @@ function CourseViewerInner() {
 
   const completedNow = activeLesson ? isLessonCompleted(user.id, courseId, activeLesson.id) : false
 
-  // Calculate progress for header
+  // Single source of truth for completed lessons — shared with sidebar via prop
+  const completedLessonIds = new Set<string>(
+    allLessons.filter((l) => isLessonCompleted(user.id, courseId, l.id)).map((l) => l.id)
+  )
+
+  // Progress for header
   const totalLessons = allLessons.length
-  const completedCount = allLessons.filter((l) => isLessonCompleted(user.id, courseId, l.id)).length
-  const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+  const progressPct =
+    totalLessons > 0 ? Math.round((completedLessonIds.size / totalLessons) * 100) : 0
 
   return (
     <div className="h-screen flex flex-col bg-[#030810] overflow-hidden">
@@ -178,9 +183,9 @@ function CourseViewerInner() {
         >
           <CourseSidebar
             course={course}
-            userId={user.id}
             activeLessonId={activeLesson?.id ?? ''}
             onSelectLesson={goToLesson}
+            completedLessonIds={completedLessonIds}
           />
         </div>
 

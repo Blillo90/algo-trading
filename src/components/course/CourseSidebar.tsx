@@ -4,24 +4,27 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, CheckCircle, Clock } from 'lucide-react'
 import type { Course } from '@/types'
-import { useProgress } from '@/hooks/useProgress'
 import { cn } from '@/lib/utils'
 
 interface CourseSidebarProps {
   course: Course
-  userId: string
   activeLessonId: string
   onSelectLesson: (lessonId: string) => void
+  /** Set de IDs de lecciones completadas — lo gestiona el padre para
+   *  garantizar sincronización inmediata con el estado optimista. */
+  completedLessonIds: Set<string>
 }
 
 export default function CourseSidebar({
   course,
-  userId,
   activeLessonId,
   onSelectLesson,
+  completedLessonIds,
 }: CourseSidebarProps) {
-  const { isLessonCompleted, getCompletionPercentage } = useProgress()
-  const percentage = getCompletionPercentage(userId, course.id, course)
+  const allCourseLessons = course.modules.flatMap((m) => m.lessons)
+  const completedCount = allCourseLessons.filter((l) => completedLessonIds.has(l.id)).length
+  const percentage =
+    allCourseLessons.length > 0 ? Math.round((completedCount / allCourseLessons.length) * 100) : 0
 
   // Find which module contains the active lesson
   const activeModuleId =
@@ -49,7 +52,7 @@ export default function CourseSidebar({
     })
   }
 
-  const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0)
+  const totalLessons = allCourseLessons.length
 
   return (
     <aside className="flex flex-col h-full bg-[#050D1C] border-r border-[#2563EB]/15 overflow-hidden">
@@ -80,7 +83,7 @@ export default function CourseSidebar({
         {course.modules.map((module) => {
           const isExpanded = expandedModules.has(module.id)
           const moduleCompletedCount = module.lessons.filter((l) =>
-            isLessonCompleted(userId, course.id, l.id)
+            completedLessonIds.has(l.id)
           ).length
 
           return (
@@ -122,7 +125,7 @@ export default function CourseSidebar({
                   >
                     {module.lessons.map((lesson) => {
                       const isActive = lesson.id === activeLessonId
-                      const completed = isLessonCompleted(userId, course.id, lesson.id)
+                      const completed = completedLessonIds.has(lesson.id)
 
                       return (
                         <button
@@ -130,9 +133,14 @@ export default function CourseSidebar({
                           onClick={() => onSelectLesson(lesson.id)}
                           className={cn(
                             'w-full flex items-start gap-3 px-4 py-3.5 text-left transition-all duration-150',
-                            isActive
-                              ? 'border-l-2 border-[#2563EB] bg-[#1B4FD8]/10'
-                              : 'border-l-2 border-transparent hover:bg-[#0A1628]/40 hover:border-[#2563EB]/30'
+                            // 4 estados: activa+completada | activa | completada | normal
+                            isActive && completed
+                              ? 'border-l-2 border-emerald-500/70 bg-emerald-950/50'
+                              : isActive
+                                ? 'border-l-2 border-[#2563EB] bg-[#1B4FD8]/10'
+                                : completed
+                                  ? 'border-l-2 border-emerald-500/30 bg-emerald-950/30 hover:bg-emerald-950/50'
+                                  : 'border-l-2 border-transparent hover:bg-[#0A1628]/40 hover:border-[#2563EB]/30'
                           )}
                         >
                           {/* Completion icon */}
@@ -159,18 +167,31 @@ export default function CourseSidebar({
                                 isActive
                                   ? 'text-white font-medium'
                                   : completed
-                                    ? 'text-[#94A3B8]'
+                                    ? 'text-[#CBD5E1]'
                                     : 'text-[#94A3B8]'
                               )}
                             >
-                              <span className="text-[#4A5568] font-mono text-xs mr-1.5">
+                              <span
+                                className={cn(
+                                  'font-mono text-xs mr-1.5',
+                                  completed ? 'text-emerald-600/70' : 'text-[#4A5568]'
+                                )}
+                              >
                                 {module.order}.{lesson.order}
                               </span>
                               {lesson.title}
                             </p>
                             <div className="flex items-center gap-1 mt-1.5">
-                              <Clock size={11} className="text-[#4A5568]" />
-                              <span className="text-[#4A5568] text-xs font-mono">
+                              <Clock
+                                size={11}
+                                className={completed ? 'text-emerald-600/60' : 'text-[#4A5568]'}
+                              />
+                              <span
+                                className={cn(
+                                  'text-xs font-mono',
+                                  completed ? 'text-emerald-600/60' : 'text-[#4A5568]'
+                                )}
+                              >
                                 {lesson.duration}m
                               </span>
                             </div>
