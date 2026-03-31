@@ -29,7 +29,7 @@ function CourseCard({ course }: { course: Course }) {
   return (
     <div className="group bg-[#0A1628] border border-[#2563EB]/15 rounded-2xl overflow-hidden hover:border-[#2563EB]/40 hover:shadow-[0_0_40px_rgba(37,99,235,0.12)] transition-all duration-300 hover:-translate-y-1">
       {/* Thumbnail placeholder */}
-      <div className="relative h-48 bg-gradient-to-br from-[#0E1F3A] to-[#071426] overflow-hidden">
+      <div className="relative h-36 bg-gradient-to-br from-[#0E1F3A] to-[#071426] overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
@@ -40,8 +40,8 @@ function CourseCard({ course }: { course: Course }) {
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#2563EB]/30 to-[#1B4FD8]/20 border border-[#2563EB]/30 flex items-center justify-center mb-3">
-              <BookOpen size={28} className="text-[#60A5FA]" />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-[#2563EB]/30 to-[#1B4FD8]/20 border border-[#2563EB]/30 flex items-center justify-center mb-2">
+              <BookOpen size={22} className="text-[#60A5FA]" />
             </div>
             <span className="text-[#4A5568] text-xs font-mono">{course.id}</span>
           </div>
@@ -61,17 +61,17 @@ function CourseCard({ course }: { course: Course }) {
         </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="font-syne font-bold text-[#E2E8F0] text-lg leading-tight mb-3 group-hover:text-white transition-colors">
+      <div className="p-5">
+        <h3 className="font-syne font-bold text-[#E2E8F0] text-lg leading-tight mb-2 group-hover:text-white transition-colors">
           {course.title}
         </h3>
 
-        <p className="text-[#94A3B8] text-sm leading-relaxed mb-4 line-clamp-2">
+        <p className="text-[#94A3B8] text-sm leading-relaxed mb-3 line-clamp-2">
           {course.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
+        <div className="flex flex-wrap gap-1.5 mb-4">
           {course.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
@@ -84,7 +84,7 @@ function CourseCard({ course }: { course: Course }) {
         </div>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 mb-5 pb-5 border-b border-[#2563EB]/10">
+        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#2563EB]/10">
           <div className="flex items-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -114,7 +114,7 @@ function CourseCard({ course }: { course: Course }) {
 
         <Link
           href={`/curso/${course.id}`}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 text-sm"
+          className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300 text-sm"
         >
           Ver el curso
           <ArrowRight size={15} />
@@ -141,7 +141,7 @@ export default function CursosPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="pt-32 pb-16 relative overflow-hidden">
+      <section className="pt-28 pb-10 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-40"
           style={{
@@ -177,7 +177,7 @@ export default function CursosPage() {
       </section>
 
       {/* Filter tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <div className="flex flex-wrap gap-2">
           {filters.map((f) => (
             <button
