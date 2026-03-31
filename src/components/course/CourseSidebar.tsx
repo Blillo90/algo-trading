@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, CheckCircle, Clock } from 'lucide-react'
+import { ChevronDown, CheckCircle, Clock, CheckCheck } from 'lucide-react'
 import type { Course } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -85,29 +85,56 @@ export default function CourseSidebar({
           const moduleCompletedCount = module.lessons.filter((l) =>
             completedLessonIds.has(l.id)
           ).length
+          // Derivado exclusivamente del conteo de lecciones completadas
+          const moduleCompleted =
+            module.lessons.length > 0 && moduleCompletedCount === module.lessons.length
+          const isActiveModule = activeModuleId === module.id
 
           return (
             <div key={module.id}>
-              {/* Module header */}
+              {/* Module header — 4 estados: completado+activo | completado | activo | normal */}
               <button
-                className="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-[#0A1628]/50 transition-colors duration-150 group"
+                className={cn(
+                  'w-full flex items-center gap-3 px-4 py-4 text-left transition-colors duration-150 group',
+                  moduleCompleted && isActiveModule
+                    ? 'bg-emerald-950/35 hover:bg-emerald-950/50'
+                    : moduleCompleted
+                      ? 'bg-emerald-950/25 hover:bg-emerald-950/40'
+                      : isActiveModule
+                        ? 'bg-[#0A1628]/40 hover:bg-[#0A1628]/60'
+                        : 'hover:bg-[#0A1628]/50'
+                )}
                 onClick={() => toggleModule(module.id)}
               >
-                <span className="w-7 h-7 rounded-md bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/25 flex items-center justify-center text-[#60A5FA] text-xs font-bold font-mono flex-shrink-0">
-                  {module.order}
+                {/* Badge: número o checkmark si el módulo está completado */}
+                <span
+                  className={cn(
+                    'w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold font-mono flex-shrink-0 transition-colors duration-200',
+                    moduleCompleted
+                      ? 'bg-emerald-500/15 border border-emerald-500/35 text-emerald-400'
+                      : 'bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/25 text-[#60A5FA]'
+                  )}
+                >
+                  {moduleCompleted ? <CheckCheck size={13} /> : module.order}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-[#CBD5E1] text-sm font-medium leading-tight truncate">
                     {module.title}
                   </p>
-                  <p className="text-[#4A5568] text-xs mt-0.5">
+                  <p
+                    className={cn(
+                      'text-xs mt-0.5 transition-colors duration-200',
+                      moduleCompleted ? 'text-emerald-500/70' : 'text-[#4A5568]'
+                    )}
+                  >
                     {moduleCompletedCount}/{module.lessons.length} completadas
                   </p>
                 </div>
                 <ChevronDown
                   size={14}
                   className={cn(
-                    'text-[#4A5568] transition-transform duration-250 flex-shrink-0',
+                    'transition-transform duration-250 flex-shrink-0',
+                    moduleCompleted ? 'text-emerald-500/60' : 'text-[#4A5568]',
                     isExpanded && 'rotate-180'
                   )}
                 />
@@ -202,8 +229,10 @@ export default function CourseSidebar({
                   </motion.div>
                 )}
               </AnimatePresence>
-              {/* Separador inset: no llega al borde donde aparece la scrollbar */}
-              <div className="h-px mx-4 bg-[#2563EB]/10" />
+              <div className={cn(
+                'h-px mx-4 transition-colors duration-200',
+                moduleCompleted ? 'bg-emerald-500/10' : 'bg-[#2563EB]/10'
+              )} />
             </div>
           )
         })}
