@@ -1,6 +1,3 @@
-'use client'
-
-import { motion } from 'framer-motion'
 import { Settings, BarChart2, Shield, Zap, TrendingUp, Users } from 'lucide-react'
 
 const BENEFITS = [
@@ -57,13 +54,7 @@ export default function Benefits() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
             Lo que aprenderás
           </span>
@@ -77,17 +68,13 @@ export default function Benefits() {
             Un programa diseñado para transformar la forma en que operas en los mercados, con
             metodología cuantitativa y enfoque en resultados reales.
           </p>
-        </motion.div>
+        </div>
 
         {/* Benefits grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {BENEFITS.map((benefit, i) => (
-            <motion.div
+          {BENEFITS.map((benefit) => (
+            <div
               key={benefit.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
               className="group relative bg-[#0A1628]/70 border border-[#2563EB]/15 rounded-2xl p-7 hover:border-[#2563EB]/45 hover:bg-[#0A1628] hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-300 hover:-translate-y-1 cursor-default"
             >
               {/* Icon */}
@@ -102,7 +89,7 @@ export default function Benefits() {
 
               {/* Corner accent */}
               <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2563EB]/40 group-hover:bg-[#60A5FA] transition-colors duration-300" />
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

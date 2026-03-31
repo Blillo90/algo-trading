@@ -1,6 +1,3 @@
-'use client'
-
-import { motion } from 'framer-motion'
 import { Clock, Brain, FlaskConical, Link as LinkIcon, BarChart2, Shuffle } from 'lucide-react'
 
 const PAIN_POINTS = [
@@ -44,13 +41,7 @@ export default function PainPoints() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
             El problema real
           </span>
@@ -64,17 +55,13 @@ export default function PainPoints() {
             La mayoría de traders no falla por falta de inteligencia ni de información.
             Falla por ausencia de un proceso sistemático, validado y replicable.
           </p>
-        </motion.div>
+        </div>
 
         {/* Pain point cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {PAIN_POINTS.map((point, i) => (
-            <motion.div
+          {PAIN_POINTS.map((point) => (
+            <div
               key={point.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
               className="group bg-[#0A1628]/80 border border-[#2563EB]/12 rounded-2xl p-6 hover:border-[#2563EB]/30 hover:bg-[#0A1628] transition-all duration-300"
             >
               <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center mb-4 group-hover:bg-[#2563EB]/15 transition-colors duration-300">
@@ -86,18 +73,12 @@ export default function PainPoints() {
               <p className="text-[#64748B] text-sm leading-relaxed group-hover:text-[#94A3B8] transition-colors duration-300">
                 {point.body}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Solution bridge */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-14 text-center"
-        >
+        <div className="mt-14 text-center">
           <div className="inline-block max-w-2xl">
             <div className="h-px bg-gradient-to-r from-transparent via-[#2563EB]/25 to-transparent mb-10" />
             <p className="text-[#CBD5E1] text-lg font-medium mb-2">
@@ -108,7 +89,7 @@ export default function PainPoints() {
               despliegue controlado. Eso es exactamente lo que enseñamos.
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
