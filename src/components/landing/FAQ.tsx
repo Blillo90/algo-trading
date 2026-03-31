@@ -73,13 +73,7 @@ export default function FAQ() {
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
+        <div className="text-center mb-14">
           <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
             FAQ
           </span>
@@ -92,19 +86,15 @@ export default function FAQ() {
           <p className="text-[#94A3B8] text-lg">
             Todo lo que necesitas saber antes de empezar.
           </p>
-        </motion.div>
+        </div>
 
         {/* Accordion */}
         <div className="space-y-3">
           {FAQS.map((faq, i) => {
             const isOpen = open === i
             return (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
                 className={`bg-[#0A1628] border rounded-xl overflow-hidden transition-all duration-200 ${
                   isOpen ? 'border-[#2563EB]/40' : 'border-[#2563EB]/15 hover:border-[#2563EB]/30'
                 }`}
@@ -142,19 +132,13 @@ export default function FAQ() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             )
           })}
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-14 text-center"
-        >
+        <div className="mt-14 text-center">
           <p className="text-[#94A3B8] text-sm mb-4">¿Tienes más preguntas?</p>
           <a
             href={`mailto:${BRAND.email}`}
@@ -162,7 +146,7 @@ export default function FAQ() {
           >
             Escríbenos a {BRAND.email}
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

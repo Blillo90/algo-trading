@@ -1,6 +1,3 @@
-'use client'
-
-import { motion } from 'framer-motion'
 import { LockOpen, Layers, Code2, Rocket } from 'lucide-react'
 
 const STEPS = [
@@ -47,13 +44,7 @@ export default function HowItWorks() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
             El proceso
           </span>
@@ -67,7 +58,7 @@ export default function HowItWorks() {
             Cuatro pasos que te llevan desde el primer video hasta un sistema de trading corriendo
             de forma autónoma en la nube.
           </p>
-        </motion.div>
+        </div>
 
         {/* Steps */}
         <div className="relative">
@@ -80,12 +71,8 @@ export default function HowItWorks() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {STEPS.map((step, i) => (
-              <motion.div
+              <div
                 key={step.number}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="relative flex flex-col items-center text-center"
               >
                 {/* Number circle */}
@@ -102,7 +89,7 @@ export default function HowItWorks() {
                   {step.title}
                 </h3>
                 <p className="text-[#94A3B8] text-sm leading-relaxed">{step.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

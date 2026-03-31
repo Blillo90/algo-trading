@@ -1,6 +1,3 @@
-'use client'
-
-import { motion } from 'framer-motion'
 import { Quote, Star } from 'lucide-react'
 
 const TESTIMONIALS = [
@@ -48,13 +45,7 @@ export default function Testimonials() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16">
           <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
             Resultados reales
           </span>
@@ -68,17 +59,13 @@ export default function Testimonials() {
             Más de 847 traders han transformado su forma de operar en los mercados con esta
             metodología.
           </p>
-        </motion.div>
+        </div>
 
         {/* Testimonial cards */}
         <div className="grid md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((testimonial, i) => (
-            <motion.div
+          {TESTIMONIALS.map((testimonial) => (
+            <div
               key={testimonial.name}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.5, delay: i * 0.12 }}
               className="relative bg-[#0A1628]/80 border border-[#2563EB]/15 rounded-2xl p-7 hover:border-[#2563EB]/35 hover:shadow-[0_0_30px_rgba(37,99,235,0.12)] transition-all duration-300 hover:-translate-y-1"
             >
               {/* Quote icon */}
@@ -110,18 +97,12 @@ export default function Testimonials() {
                   <p className="text-[#94A3B8] text-xs">{testimonial.role}</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { value: '847+', label: 'Alumnos activos' },
             { value: '4.9/5', label: 'Valoración media' },
@@ -136,7 +117,7 @@ export default function Testimonials() {
               <p className="text-[#94A3B8] text-xs">{stat.label}</p>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

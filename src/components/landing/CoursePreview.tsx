@@ -68,24 +68,12 @@ export default function CoursePreview() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section label */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center text-[#4A5568] text-xs font-semibold uppercase tracking-widest mb-10"
-        >
+        <p className="text-center text-[#4A5568] text-xs font-semibold uppercase tracking-widest mb-10">
           Curso principal
-        </motion.p>
+        </p>
 
         {/* ── HERO BLOCK ─────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative bg-[#0A1628] border border-[#2563EB]/20 rounded-2xl overflow-hidden mb-12 shadow-[0_0_80px_rgba(37,99,235,0.08)]"
-        >
+        <div className="relative bg-[#0A1628] border border-[#2563EB]/20 rounded-2xl overflow-hidden mb-12 shadow-[0_0_80px_rgba(37,99,235,0.08)]">
           {/* Inner grid bg */}
           <div
             className="absolute inset-0 opacity-25 pointer-events-none"
@@ -222,15 +210,10 @@ export default function CoursePreview() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* ── PROGRAM SECTION ────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-        >
+        <div>
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
             <div>
@@ -316,7 +299,7 @@ export default function CoursePreview() {
               )
             })}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
