@@ -18,6 +18,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://robotedge.tech'),
   title: {
     default: 'RobotEdge — Formación en Trading Algorítmico',
     template: '%s | RobotEdge',
