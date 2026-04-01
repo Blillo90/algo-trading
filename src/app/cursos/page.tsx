@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Star, Users, Clock, BookOpen, ArrowRight, Tag } from 'lucide-react'
+import { Star, Users, Clock, BookOpen, ArrowRight, ArrowLeft, Tag } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { COURSES } from '@/data/courses'
@@ -140,8 +140,19 @@ export default function CursosPage() {
     <main className="min-h-screen bg-scene">
       <Navbar />
 
+      {/* Back link */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-ink-4 hover:text-ink-2 text-sm transition-colors duration-200"
+        >
+          <ArrowLeft size={14} />
+          Volver a inicio
+        </Link>
+      </div>
+
       {/* Header */}
-      <section className="pt-28 pb-10 relative overflow-hidden">
+      <section className="pt-6 pb-10 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-40"
           style={{
