@@ -39,6 +39,21 @@
   --c-accent-hi: 96 165 250;   /* #60A5FA */
 }
 
+/* Acero — steel blue-gray, genuinely mid-tone between dark and light */
+[data-theme='acero'] {
+  --c-scene:     172 186 206;  /* #ACBACE - steel blue-gray */
+  --c-layer:     158 174 196;  /* #9EAEC4 - navbar/section bg */
+  --c-surface:   185 198 218;  /* #B9C6DA - card/input bg */
+  --c-surface2:  176 190 212;  /* #B0BED4 - alternate card */
+  --c-well:      145 162 184;  /* #91A2B8 - tags/progress tracks */
+  --c-ink-1:     10 18 36;     /* #0A1224 - primary text, dark navy */
+  --c-ink-2:     18 30 54;     /* #121E36 */
+  --c-ink-3:     46 64 92;     /* #2E405C */
+  --c-ink-4:     80 104 136;   /* #506888 */
+  --c-ink-5:     118 146 178;  /* #7692B2 */
+  --c-accent-hi: 29 78 216;    /* #1D4ED8 - dark cobalt for contrast */
+}
+
 /* Niebla — light-medium */
 [data-theme='fog'] {
   --c-scene:     238 242 247;  /* #EEF2F7 */

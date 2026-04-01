@@ -4,7 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 
-const antiFlashScript = `(function(){try{var t=localStorage.getItem('re-theme');if(t&&['dark','graphite','fog','light'].includes(t)){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`
+const antiFlashScript = `(function(){try{var t=localStorage.getItem('re-theme');if(t&&['dark','graphite','acero','fog','light'].includes(t)){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`
 
 const syne = Syne({
   subsets: ['latin'],

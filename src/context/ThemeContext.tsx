@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react'
 
-export type Theme = 'dark' | 'graphite' | 'fog' | 'light'
+export type Theme = 'dark' | 'graphite' | 'acero' | 'fog' | 'light'
 
 export interface ThemeEntry {
   id: Theme
@@ -16,6 +16,7 @@ export interface ThemeEntry {
 export const THEMES: ThemeEntry[] = [
   { id: 'dark',     label: 'Oscuro',  swatch: '#030810' },
   { id: 'graphite', label: 'Grafito', swatch: '#1A2336' },
+  { id: 'acero',    label: 'Acero',   swatch: '#ACBACE', border: '#7692B2' },
   { id: 'fog',      label: 'Niebla',  swatch: '#E4EAF3', border: '#CBD5E1' },
   { id: 'light',    label: 'Claro',   swatch: '#FFFFFF', border: '#CBD5E1' },
 ]
