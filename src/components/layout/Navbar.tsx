@@ -24,6 +24,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
   const themeRef = useRef<HTMLDivElement>(null)
   const { user, logout } = useAuth()
   const { theme, setTheme } = useTheme()
@@ -40,6 +41,41 @@ export default function Navbar() {
     setUserMenuOpen(false)
     setThemeOpen(false)
   }, [pathname])
+
+  // Track which home section is visible — only relevant on the home page
+  useEffect(() => {
+    if (pathname !== '/') {
+      setActiveSection(null)
+      return
+    }
+    const SECTION_IDS = ['metodologia', 'testimonios', 'faq']
+    const OFFSET = 80 // navbar height + buffer
+
+    function detect() {
+      let current: string | null = null
+      for (const id of SECTION_IDS) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= OFFSET) {
+          current = id
+        }
+      }
+      setActiveSection(current)
+    }
+
+    detect()
+    window.addEventListener('scroll', detect, { passive: true })
+    return () => window.removeEventListener('scroll', detect)
+  }, [pathname])
+
+  function isActive(href: string): boolean {
+    if (href.startsWith('/#')) {
+      return pathname === '/' && activeSection === href.slice(2)
+    }
+    if (href === '/') {
+      return pathname === '/' && activeSection === null
+    }
+    return pathname === href
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -80,7 +116,7 @@ export default function Navbar() {
         {/* Center nav — desktop */}
         <nav className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
-            <NavLink key={link.href} href={link.href} active={pathname === link.href}>
+            <NavLink key={link.href} href={link.href} active={isActive(link.href)}>
               {link.label}
             </NavLink>
           ))}
@@ -232,7 +268,12 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block px-3 py-2.5 text-sm font-medium text-ink-3 hover:text-ink-1 hover:bg-surface rounded-lg transition-colors duration-150"
+                  className={cn(
+                    'block px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150',
+                    isActive(link.href)
+                      ? 'text-accent-hi bg-cobalt-600/10'
+                      : 'text-ink-3 hover:text-ink-1 hover:bg-surface'
+                  )}
                 >
                   {link.label}
                 </Link>
