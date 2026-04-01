@@ -51,19 +51,19 @@ export default function StatsWidget({
     : value
 
   return (
-    <div className="bg-[#0A1628] border border-[#2563EB]/15 rounded-2xl p-6 hover:border-[#2563EB]/35 hover:shadow-[0_0_25px_rgba(37,99,235,0.12)] transition-all duration-300 group">
+    <div className="bg-surface border border-cobalt-600/15 rounded-2xl p-6 hover:border-cobalt-600/35 hover:shadow-[0_0_25px_rgba(37,99,235,0.12)] transition-all duration-300 group">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-[#94A3B8] text-sm font-medium mb-1">{title}</p>
-          <p className="font-bold font-mono text-3xl text-white">{displayValue}</p>
+          <p className="text-ink-3 text-sm font-medium mb-1">{title}</p>
+          <p className="font-bold font-mono text-3xl text-ink-1">{displayValue}</p>
         </div>
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/25 flex items-center justify-center group-hover:border-[#2563EB]/50 transition-colors duration-300">
-          <Icon size={20} className="text-[#60A5FA]" />
+        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cobalt-600/25 to-cobalt-700/15 border border-cobalt-600/25 flex items-center justify-center group-hover:border-cobalt-600/50 transition-colors duration-300">
+          <Icon size={20} className="text-accent-hi" />
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <p className="text-[#94A3B8] text-xs">{subtitle}</p>
+        <p className="text-ink-3 text-xs">{subtitle}</p>
         {change && (
           <span
             className={`text-xs font-semibold font-mono ${

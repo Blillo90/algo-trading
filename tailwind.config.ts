@@ -9,6 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // ── Semantic theme tokens (use these in components) ──────────────
+        // Each maps to a CSS variable set per data-theme.
+        // Supports Tailwind opacity modifier:  bg-scene/50, text-ink-3/80, etc.
+        scene:    'rgb(var(--c-scene)    / <alpha-value>)', // page background
+        layer:    'rgb(var(--c-layer)    / <alpha-value>)', // navbar / section bg
+        surface:  'rgb(var(--c-surface)  / <alpha-value>)', // card / input bg
+        surface2: 'rgb(var(--c-surface2) / <alpha-value>)', // alternate card
+        well:     'rgb(var(--c-well)     / <alpha-value>)', // tags / progress tracks
+        ink: {
+          1: 'rgb(var(--c-ink-1) / <alpha-value>)', // primary text
+          2: 'rgb(var(--c-ink-2) / <alpha-value>)', // secondary text
+          3: 'rgb(var(--c-ink-3) / <alpha-value>)', // muted text
+          4: 'rgb(var(--c-ink-4) / <alpha-value>)', // dimmed text
+          5: 'rgb(var(--c-ink-5) / <alpha-value>)', // ghost text
+        },
+        'accent-hi': 'rgb(var(--c-accent-hi) / <alpha-value>)', // blue text (#60A5FA dark / #1D4ED8 light)
+
+        // ── Static brand palette (kept for reference / legacy use) ───────
         space: {
           950: '#030810',
           900: '#050D1C',

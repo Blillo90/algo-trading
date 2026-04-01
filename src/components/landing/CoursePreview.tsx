@@ -35,13 +35,13 @@ function MetricItem({
   value: string
 }) {
   return (
-    <div className="flex items-center gap-3 bg-[#030810]/60 border border-[#2563EB]/15 rounded-xl px-4 py-3">
-      <div className="w-8 h-8 rounded-lg bg-[#2563EB]/15 border border-[#2563EB]/20 flex items-center justify-center text-[#60A5FA] flex-shrink-0">
+    <div className="flex items-center gap-3 bg-scene/60 border border-cobalt-600/15 rounded-xl px-4 py-3">
+      <div className="w-8 h-8 rounded-lg bg-cobalt-600/15 border border-cobalt-600/20 flex items-center justify-center text-accent-hi flex-shrink-0">
         {icon}
       </div>
       <div>
-        <p className="text-[#4A5568] text-xs leading-none mb-1">{label}</p>
-        <p className="text-[#E2E8F0] text-sm font-semibold">{value}</p>
+        <p className="text-ink-5 text-xs leading-none mb-1">{label}</p>
+        <p className="text-ink-1 text-sm font-semibold">{value}</p>
       </div>
     </div>
   )
@@ -57,7 +57,7 @@ export default function CoursePreview() {
   return (
     <section
       id="metodologia"
-      className="py-20 md:py-28 bg-[#030810] relative overflow-hidden"
+      className="py-20 md:py-28 bg-scene relative overflow-hidden"
     >
       {/* Background glow */}
       <div
@@ -68,12 +68,12 @@ export default function CoursePreview() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section label */}
-        <p className="text-center text-[#4A5568] text-xs font-semibold uppercase tracking-widest mb-10">
+        <p className="text-center text-ink-5 text-xs font-semibold uppercase tracking-widest mb-10">
           Curso principal
         </p>
 
         {/* ── HERO BLOCK ─────────────────────────────────────────── */}
-        <div className="relative bg-[#0A1628] border border-[#2563EB]/20 rounded-2xl overflow-hidden mb-12 shadow-[0_0_80px_rgba(37,99,235,0.08)]">
+        <div className="relative bg-surface border border-cobalt-600/20 rounded-2xl overflow-hidden mb-12 shadow-[0_0_80px_rgba(37,99,235,0.08)]">
           {/* Inner grid bg */}
           <div
             className="absolute inset-0 opacity-25 pointer-events-none"
@@ -89,34 +89,34 @@ export default function CoursePreview() {
             style={{ background: 'radial-gradient(ellipse at 80% 50%, rgba(37,99,235,0.1) 0%, transparent 65%)' }}
           />
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#2563EB]/60 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cobalt-600/60 to-transparent" />
 
           <div className="relative flex flex-col lg:flex-row">
             {/* ── LEFT: course info ── */}
-            <div className="flex-1 p-8 md:p-12 lg:border-r border-[#2563EB]/10">
+            <div className="flex-1 p-8 md:p-12 lg:border-r border-cobalt-600/10">
               {/* Badges row */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1B4FD8]/20 border border-[#2563EB]/35 text-[#60A5FA] text-xs font-bold uppercase tracking-wide">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cobalt-700/20 border border-cobalt-600/35 text-accent-hi text-xs font-bold uppercase tracking-wide">
                   <Award size={11} />
                   {LEVEL_LABELS[course.level]}
                 </span>
-                <span className="text-[#4A5568] font-mono text-xs">
+                <span className="text-ink-5 font-mono text-xs">
                   {course.duration}h · {totalLessons} lecciones · {course.modules.length} módulos
                 </span>
               </div>
 
               {/* Title */}
-              <h2 className="font-syne font-bold text-3xl md:text-4xl xl:text-5xl text-white leading-tight mb-4">
+              <h2 className="font-syne font-bold text-3xl md:text-4xl xl:text-5xl text-ink-1 leading-tight mb-4">
                 {course.title}
               </h2>
 
               {/* Tagline */}
-              <p className="text-[#60A5FA] text-lg font-medium mb-4">
+              <p className="text-accent-hi text-lg font-medium mb-4">
                 De la hipótesis al sistema completamente automatizado.
               </p>
 
               {/* Description */}
-              <p className="text-[#94A3B8] leading-relaxed mb-7 max-w-xl">
+              <p className="text-ink-3 leading-relaxed mb-7 max-w-xl">
                 {course.description}
               </p>
 
@@ -125,9 +125,9 @@ export default function CoursePreview() {
                 {course.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#0E1F3A] border border-[#2563EB]/20 text-[#94A3B8] text-xs font-mono"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-well border border-cobalt-600/20 text-ink-3 text-xs font-mono"
                   >
-                    <Tag size={9} className="text-[#60A5FA]" />
+                    <Tag size={9} className="text-accent-hi" />
                     {tag}
                   </span>
                 ))}
@@ -136,7 +136,7 @@ export default function CoursePreview() {
               {/* CTA */}
               <Link
                 href="/cursos"
-                className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all duration-300 hover:-translate-y-0.5 text-base"
+                className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-cobalt-600 to-cobalt-500 text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all duration-300 hover:-translate-y-0.5 text-base"
               >
                 Acceder al Curso
                 <ArrowRight size={18} />
@@ -144,23 +144,23 @@ export default function CoursePreview() {
 
               {/* Trust row */}
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5">
-                <span className="flex items-center gap-1.5 text-[#4A5568] text-xs">
+                <span className="flex items-center gap-1.5 text-ink-5 text-xs">
                   <Shield size={12} className="text-emerald-400" />
                   30 días de garantía
                 </span>
-                <span className="flex items-center gap-1.5 text-[#4A5568] text-xs">
-                  <Zap size={12} className="text-[#60A5FA]" />
+                <span className="flex items-center gap-1.5 text-ink-5 text-xs">
+                  <Zap size={12} className="text-accent-hi" />
                   Acceso inmediato
                 </span>
-                <span className="flex items-center gap-1.5 text-[#4A5568] text-xs">
-                  <InfinityIcon size={12} className="text-[#60A5FA]" />
+                <span className="flex items-center gap-1.5 text-ink-5 text-xs">
+                  <InfinityIcon size={12} className="text-accent-hi" />
                   Acceso vitalicio
                 </span>
               </div>
             </div>
 
             {/* ── RIGHT: price + metrics ── */}
-            <div className="lg:w-72 xl:w-80 flex-shrink-0 p-8 md:p-10 bg-[#071426]/70 flex flex-col">
+            <div className="lg:w-72 xl:w-80 flex-shrink-0 p-8 md:p-10 bg-surface2/70 flex flex-col">
               {/* Rating */}
               <div className="flex items-center gap-2 mb-6">
                 <div className="flex items-center gap-0.5">
@@ -168,13 +168,13 @@ export default function CoursePreview() {
                     <Star
                       key={i}
                       size={13}
-                      className={i < Math.floor(course.rating) ? 'text-amber-400 fill-amber-400' : 'text-[#4A5568]'}
+                      className={i < Math.floor(course.rating) ? 'text-amber-400 fill-amber-400' : 'text-ink-5'}
                     />
                   ))}
                 </div>
-                <span className="text-white font-semibold font-mono text-sm">{course.rating}</span>
-                <span className="text-[#4A5568] text-xs">·</span>
-                <span className="text-[#94A3B8] text-xs flex items-center gap-1">
+                <span className="text-ink-1 font-semibold font-mono text-sm">{course.rating}</span>
+                <span className="text-ink-5 text-xs">·</span>
+                <span className="text-ink-3 text-xs flex items-center gap-1">
                   <Users size={11} />
                   {course.studentsCount.toLocaleString('es-ES')}
                 </span>
@@ -183,10 +183,10 @@ export default function CoursePreview() {
               {/* Price */}
               <div className="mb-7">
                 <div className="flex items-baseline gap-3 mb-2">
-                  <span className="font-syne font-bold text-5xl text-white leading-none">
+                  <span className="font-syne font-bold text-5xl text-ink-1 leading-none">
                     {course.price}€
                   </span>
-                  <span className="text-[#4A5568] text-xl line-through">{course.originalPrice}€</span>
+                  <span className="text-ink-5 text-xl line-through">{course.originalPrice}€</span>
                 </div>
                 <span className="inline-block px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-xs font-bold border border-emerald-500/25">
                   Ahorra un {discountPct}%
@@ -202,8 +202,8 @@ export default function CoursePreview() {
               </div>
 
               {/* Guarantee */}
-              <div className="mt-auto pt-5 border-t border-[#2563EB]/10">
-                <div className="flex items-center gap-2 text-[#94A3B8] text-xs">
+              <div className="mt-auto pt-5 border-t border-cobalt-600/10">
+                <div className="flex items-center gap-2 text-ink-3 text-xs">
                   <Shield size={13} className="text-emerald-400 flex-shrink-0" />
                   Garantía de devolución 30 días · Sin preguntas
                 </div>
@@ -217,17 +217,17 @@ export default function CoursePreview() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
             <div>
-              <h3 className="font-syne font-bold text-2xl md:text-3xl text-white mb-1">
+              <h3 className="font-syne font-bold text-2xl md:text-3xl text-ink-1 mb-1">
                 Programa del curso
               </h3>
-              <p className="text-[#94A3B8] text-sm">
-                <span className="font-mono text-[#60A5FA]">{course.modules.length}</span> módulos ·{' '}
-                <span className="font-mono text-[#60A5FA]">{totalLessons}</span> lecciones ·{' '}
-                <span className="font-mono text-[#60A5FA]">{course.duration}h</span> de contenido
+              <p className="text-ink-3 text-sm">
+                <span className="font-mono text-accent-hi">{course.modules.length}</span> módulos ·{' '}
+                <span className="font-mono text-accent-hi">{totalLessons}</span> lecciones ·{' '}
+                <span className="font-mono text-accent-hi">{course.duration}h</span> de contenido
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-[#4A5568] text-xs">
-              <BarChart2 size={13} className="text-[#60A5FA]" />
+            <div className="flex items-center gap-1.5 text-ink-5 text-xs">
+              <BarChart2 size={13} className="text-accent-hi" />
               Actualizado en 2025
             </div>
           </div>
@@ -240,28 +240,28 @@ export default function CoursePreview() {
               return (
                 <div
                   key={module.id}
-                  className="bg-[#0A1628] border border-[#2563EB]/15 rounded-xl overflow-hidden hover:border-[#2563EB]/30 transition-colors duration-200"
+                  className="bg-surface border border-cobalt-600/15 rounded-xl overflow-hidden hover:border-cobalt-600/30 transition-colors duration-200"
                 >
                   <button
                     className="w-full flex items-center justify-between px-6 py-5 text-left"
                     onClick={() => setExpandedModule(isOpen ? null : module.id)}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/30 flex items-center justify-center text-[#60A5FA] text-sm font-bold font-mono flex-shrink-0">
+                      <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-cobalt-600/25 to-cobalt-700/15 border border-cobalt-600/30 flex items-center justify-center text-accent-hi text-sm font-bold font-mono flex-shrink-0">
                         {module.order}
                       </span>
                       <div>
-                        <p className="text-[#E2E8F0] font-semibold text-base leading-tight">
+                        <p className="text-ink-1 font-semibold text-base leading-tight">
                           {module.title}
                         </p>
-                        <p className="text-[#4A5568] text-xs mt-1 font-mono">
+                        <p className="text-ink-5 text-xs mt-1 font-mono">
                           {module.lessons.length} lecciones · {Math.round(totalDuration / 60 * 10) / 10}h
                         </p>
                       </div>
                     </div>
                     <ChevronDown
                       size={16}
-                      className={`text-[#4A5568] transition-transform duration-250 flex-shrink-0 ml-4 ${isOpen ? 'rotate-180' : ''}`}
+                      className={`text-ink-5 transition-transform duration-250 flex-shrink-0 ml-4 ${isOpen ? 'rotate-180' : ''}`}
                     />
                   </button>
 
@@ -274,18 +274,18 @@ export default function CoursePreview() {
                         transition={{ duration: 0.22, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-5 border-t border-[#2563EB]/10">
-                          <ul className="mt-4 space-y-0 divide-y divide-[#2563EB]/8">
+                        <div className="px-6 pb-5 border-t border-cobalt-600/10">
+                          <ul className="mt-4 space-y-0 divide-y divide-cobalt-600/8">
                             {module.lessons.map((lesson, idx) => (
                               <li
                                 key={lesson.id}
-                                className="flex items-center gap-3 py-2.5 text-sm text-[#94A3B8]"
+                                className="flex items-center gap-3 py-2.5 text-sm text-ink-3"
                               >
-                                <span className="text-[#4A5568] font-mono text-xs w-6 flex-shrink-0 text-right">
+                                <span className="text-ink-5 font-mono text-xs w-6 flex-shrink-0 text-right">
                                   {module.order}.{idx + 1}
                                 </span>
                                 <span className="flex-1">{lesson.title}</span>
-                                <span className="font-mono text-[#4A5568] text-xs flex-shrink-0">
+                                <span className="font-mono text-ink-5 text-xs flex-shrink-0">
                                   {lesson.duration}m
                                 </span>
                               </li>

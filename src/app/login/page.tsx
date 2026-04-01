@@ -43,9 +43,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#030810]">
+    <div className="min-h-screen flex bg-scene">
       {/* Left decorative panel */}
-      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-[#050D1C] border-r border-[#2563EB]/15 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-layer border-r border-cobalt-600/15 flex-col justify-between p-12">
         {/* Grid */}
         <div
           className="absolute inset-0"
@@ -68,18 +68,18 @@ export default function LoginPage() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-16">
             <Image src={BRAND.logo} alt={BRAND.name} width={28} height={28} className="flex-shrink-0" />
-            <span className="font-syne font-bold text-lg bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="font-syne font-bold text-lg bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               {BRAND.name}
             </span>
           </Link>
 
-          <h2 className="font-syne font-bold text-4xl text-white mb-4 leading-tight">
+          <h2 className="font-syne font-bold text-4xl text-ink-1 mb-4 leading-tight">
             Bienvenido a tu{' '}
-            <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               centro de formación
             </span>
           </h2>
-          <p className="text-[#94A3B8] leading-relaxed mb-12">
+          <p className="text-ink-3 leading-relaxed mb-12">
             Accede a tu contenido, continúa donde lo dejaste y sigue construyendo sistemas de
             trading que funcionan.
           </p>
@@ -88,24 +88,24 @@ export default function LoginPage() {
           <div className="space-y-4">
             {[
               { label: 'Win Rate promedio alumnos', value: '64.8%', color: 'text-emerald-400' },
-              { label: 'Sharpe medio tras el curso', value: '2.1', color: 'text-[#60A5FA]' },
-              { label: 'Sistemas en producción', value: '340+', color: 'text-[#60A5FA]' },
+              { label: 'Sharpe medio tras el curso', value: '2.1', color: 'text-accent-hi' },
+              { label: 'Sistemas en producción', value: '340+', color: 'text-accent-hi' },
             ].map((metric, i) => (
               <motion.div
                 key={metric.label}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                className="flex items-center justify-between bg-[#0A1628]/60 border border-[#2563EB]/15 rounded-xl px-5 py-3"
+                className="flex items-center justify-between bg-surface/60 border border-cobalt-600/15 rounded-xl px-5 py-3"
               >
-                <span className="text-[#94A3B8] text-sm">{metric.label}</span>
+                <span className="text-ink-3 text-sm">{metric.label}</span>
                 <span className={`font-bold font-mono ${metric.color}`}>{metric.value}</span>
               </motion.div>
             ))}
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center gap-2 text-[#4A5568] text-xs">
+        <div className="relative z-10 flex items-center gap-2 text-ink-5 text-xs">
           <Shield size={12} />
           Plataforma segura y cifrada · {BRAND.name} © {new Date().getFullYear()}
         </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-[#94A3B8] hover:text-[#E2E8F0] text-sm mb-10 transition-colors"
+            className="inline-flex items-center gap-1.5 text-ink-3 hover:text-ink-1 text-sm mb-10 transition-colors"
           >
             <ArrowLeft size={14} />
             Volver al inicio
@@ -129,11 +129,11 @@ export default function LoginPage() {
           >
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={18} className="text-[#60A5FA]" />
-                <span className="text-[#60A5FA] text-sm font-medium">Acceso a la plataforma</span>
+                <TrendingUp size={18} className="text-accent-hi" />
+                <span className="text-accent-hi text-sm font-medium">Acceso a la plataforma</span>
               </div>
-              <h1 className="font-syne font-bold text-3xl text-white">Bienvenido de nuevo</h1>
-              <p className="text-[#94A3B8] mt-2 text-sm">
+              <h1 className="font-syne font-bold text-3xl text-ink-1">Bienvenido de nuevo</h1>
+              <p className="text-ink-3 mt-2 text-sm">
                 Inicia sesión para continuar con tu formación.
               </p>
             </div>
@@ -141,7 +141,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-[#CBD5E1] mb-2">
+                <label className="block text-sm font-medium text-ink-2 mb-2">
                   Email
                 </label>
                 <input
@@ -151,13 +151,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
-                  className="w-full bg-[#0A1628] border border-[#2563EB]/25 rounded-xl px-4 py-3 text-[#E2E8F0] placeholder:text-[#4A5568] focus:outline-none focus:border-[#2563EB]/70 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.15)] transition-all duration-200 text-sm"
+                  className="w-full bg-surface border border-cobalt-600/25 rounded-xl px-4 py-3 text-ink-1 placeholder:text-ink-5 focus:outline-none focus:border-cobalt-600/70 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.15)] transition-all duration-200 text-sm"
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="block text-sm font-medium text-[#CBD5E1] mb-2">
+                <label className="block text-sm font-medium text-ink-2 mb-2">
                   Contraseña
                 </label>
                 <div className="relative">
@@ -168,12 +168,12 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-[#0A1628] border border-[#2563EB]/25 rounded-xl px-4 py-3 pr-11 text-[#E2E8F0] placeholder:text-[#4A5568] focus:outline-none focus:border-[#2563EB]/70 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.15)] transition-all duration-200 text-sm"
+                    className="w-full bg-surface border border-cobalt-600/25 rounded-xl px-4 py-3 pr-11 text-ink-1 placeholder:text-ink-5 focus:outline-none focus:border-cobalt-600/70 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.15)] transition-all duration-200 text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4A5568] hover:text-[#94A3B8] transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-5 hover:text-ink-3 transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -187,9 +187,9 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  className="w-4 h-4 accent-[#2563EB] rounded"
+                  className="w-4 h-4 accent-cobalt-600 rounded"
                 />
-                <label htmlFor="remember" className="text-[#94A3B8] text-sm cursor-pointer">
+                <label htmlFor="remember" className="text-ink-3 text-sm cursor-pointer">
                   Recordar sesión
                 </label>
               </div>
@@ -209,7 +209,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-xl hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none text-sm"
+                className="w-full py-3.5 bg-gradient-to-r from-cobalt-600 to-cobalt-500 text-white font-semibold rounded-xl hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none text-sm"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">

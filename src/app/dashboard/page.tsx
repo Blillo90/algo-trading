@@ -13,10 +13,10 @@ import { COURSES } from '@/data/courses'
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-[#030810] flex items-center justify-center">
+    <div className="min-h-screen bg-scene flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-[#94A3B8] text-sm">Cargando...</p>
+        <div className="w-12 h-12 border-2 border-cobalt-600/30 border-t-cobalt-600 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-ink-3 text-sm">Cargando...</p>
       </div>
     </div>
   )
@@ -52,7 +52,7 @@ export default function DashboardPage() {
   const todayFormatted = today.charAt(0).toUpperCase() + today.slice(1)
 
   return (
-    <main className="min-h-screen bg-[#030810]">
+    <main className="min-h-screen bg-scene">
       <Navbar />
 
       {/* Grid bg */}
@@ -73,14 +73,14 @@ export default function DashboardPage() {
           transition={{ duration: 0.5 }}
           className="mb-10"
         >
-          <p className="text-[#94A3B8] text-sm mb-1">{todayFormatted}</p>
-          <h1 className="font-syne font-bold text-3xl md:text-4xl text-white">
+          <p className="text-ink-3 text-sm mb-1">{todayFormatted}</p>
+          <h1 className="font-syne font-bold text-3xl md:text-4xl text-ink-1">
             Bienvenido,{' '}
-            <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               {user.name.split(' ')[0]}
             </span>
           </h1>
-          <p className="text-[#94A3B8] mt-2">
+          <p className="text-ink-3 mt-2">
             {overallPercentage > 0
               ? `Llevas un ${overallPercentage}% de progreso global. ¡Sigue así!`
               : 'Comienza tu formación accediendo a uno de tus cursos.'}
@@ -138,8 +138,8 @@ export default function DashboardPage() {
           transition={{ duration: 0.5, delay: 0.35 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-syne font-bold text-xl text-white">Mis cursos</h2>
-            <span className="text-[#94A3B8] text-sm">{enrolledCourses.length} inscritos</span>
+            <h2 className="font-syne font-bold text-xl text-ink-1">Mis cursos</h2>
+            <span className="text-ink-3 text-sm">{enrolledCourses.length} inscritos</span>
           </div>
 
           {enrolledCourses.length > 0 ? (
@@ -149,16 +149,16 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-[#0A1628] border border-[#2563EB]/15 rounded-2xl p-12 text-center">
-              <BookOpen size={36} className="text-[#2563EB]/40 mx-auto mb-4" />
-              <h3 className="text-[#E2E8F0] font-semibold mb-2">No tienes cursos aún</h3>
-              <p className="text-[#94A3B8] text-sm mb-5">
+            <div className="bg-surface border border-cobalt-600/15 rounded-2xl p-12 text-center">
+              <BookOpen size={36} className="text-cobalt-600/40 mx-auto mb-4" />
+              <h3 className="text-ink-1 font-semibold mb-2">No tienes cursos aún</h3>
+              <p className="text-ink-3 text-sm mb-5">
                 Explora nuestro catálogo y encuentra el programa que mejor se adapta a tus
                 objetivos.
               </p>
               <a
                 href="/cursos"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-medium rounded-xl text-sm hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cobalt-600 to-cobalt-500 text-white font-medium rounded-xl text-sm hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-300"
               >
                 Ver cursos disponibles
               </a>

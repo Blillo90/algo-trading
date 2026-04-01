@@ -55,25 +55,25 @@ export default function CourseSidebar({
   const totalLessons = allCourseLessons.length
 
   return (
-    <aside className="flex flex-col h-full bg-[#050D1C] border-r border-[#2563EB]/15 overflow-hidden">
+    <aside className="flex flex-col h-full bg-layer border-r border-cobalt-600/15 overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-[#2563EB]/10 flex-shrink-0">
-        <h2 className="font-syne font-semibold text-[#E2E8F0] text-base mb-3">
+      <div className="p-5 border-b border-cobalt-600/10 flex-shrink-0">
+        <h2 className="font-syne font-semibold text-ink-1 text-base mb-3">
           Contenido del Curso
         </h2>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[#94A3B8] text-sm">
+          <span className="text-ink-3 text-sm">
             {course.modules.length} módulos · {totalLessons} lecciones
           </span>
-          <span className="text-[#60A5FA] text-sm font-bold font-mono">{percentage}%</span>
+          <span className="text-accent-hi text-sm font-bold font-mono">{percentage}%</span>
         </div>
         {/* Progress bar */}
-        <div className="h-1.5 bg-[#0E1F3A] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-well rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-[#2563EB] to-[#60A5FA] rounded-full"
+            className="h-full bg-gradient-to-r from-cobalt-600 to-cobalt-400 rounded-full"
           />
         </div>
       </div>
@@ -101,8 +101,8 @@ export default function CourseSidebar({
                     : moduleCompleted
                       ? 'bg-emerald-950/25 hover:bg-emerald-950/40'
                       : isActiveModule
-                        ? 'bg-[#0A1628]/40 hover:bg-[#0A1628]/60'
-                        : 'hover:bg-[#0A1628]/50'
+                        ? 'bg-surface/40 hover:bg-surface/60'
+                        : 'hover:bg-surface/50'
                 )}
                 onClick={() => toggleModule(module.id)}
               >
@@ -112,19 +112,19 @@ export default function CourseSidebar({
                     'w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold font-mono flex-shrink-0 transition-colors duration-200',
                     moduleCompleted
                       ? 'bg-emerald-500/15 border border-emerald-500/35 text-emerald-400'
-                      : 'bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/25 text-[#60A5FA]'
+                      : 'bg-gradient-to-br from-cobalt-600/25 to-cobalt-700/15 border border-cobalt-600/25 text-accent-hi'
                   )}
                 >
                   {moduleCompleted ? <CheckCheck size={13} /> : module.order}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[#CBD5E1] text-sm font-medium leading-tight truncate">
+                  <p className="text-ink-2 text-sm font-medium leading-tight truncate">
                     {module.title}
                   </p>
                   <p
                     className={cn(
                       'text-xs mt-0.5 transition-colors duration-200',
-                      moduleCompleted ? 'text-emerald-500/70' : 'text-[#4A5568]'
+                      moduleCompleted ? 'text-emerald-500/70' : 'text-ink-5'
                     )}
                   >
                     {moduleCompletedCount}/{module.lessons.length} completadas
@@ -134,7 +134,7 @@ export default function CourseSidebar({
                   size={14}
                   className={cn(
                     'transition-transform duration-250 flex-shrink-0',
-                    moduleCompleted ? 'text-emerald-500/60' : 'text-[#4A5568]',
+                    moduleCompleted ? 'text-emerald-500/60' : 'text-ink-5',
                     isExpanded && 'rotate-180'
                   )}
                 />
@@ -164,10 +164,10 @@ export default function CourseSidebar({
                             isActive && completed
                               ? 'border-l-2 border-emerald-500/70 bg-emerald-950/50'
                               : isActive
-                                ? 'border-l-2 border-[#2563EB] bg-[#1B4FD8]/10'
+                                ? 'border-l-2 border-cobalt-600 bg-cobalt-700/10'
                                 : completed
                                   ? 'border-l-2 border-emerald-500/30 bg-emerald-950/30 hover:bg-emerald-950/50'
-                                  : 'border-l-2 border-transparent hover:bg-[#0A1628]/40 hover:border-[#2563EB]/30'
+                                  : 'border-l-2 border-transparent hover:bg-surface/40 hover:border-cobalt-600/30'
                           )}
                         >
                           {/* Completion icon */}
@@ -179,8 +179,8 @@ export default function CourseSidebar({
                                 className={cn(
                                   'w-4 h-4 rounded-full border',
                                   isActive
-                                    ? 'border-[#2563EB] bg-[#2563EB]/20'
-                                    : 'border-[#4A5568]'
+                                    ? 'border-cobalt-600 bg-cobalt-600/20'
+                                    : 'border-ink-5'
                                 )}
                               />
                             )}
@@ -192,16 +192,16 @@ export default function CourseSidebar({
                               className={cn(
                                 'text-sm leading-snug',
                                 isActive
-                                  ? 'text-white font-medium'
+                                  ? 'text-ink-1 font-medium'
                                   : completed
-                                    ? 'text-[#CBD5E1]'
-                                    : 'text-[#94A3B8]'
+                                    ? 'text-ink-2'
+                                    : 'text-ink-3'
                               )}
                             >
                               <span
                                 className={cn(
                                   'font-mono text-xs mr-1.5',
-                                  completed ? 'text-emerald-600/70' : 'text-[#4A5568]'
+                                  completed ? 'text-emerald-600/70' : 'text-ink-5'
                                 )}
                               >
                                 {module.order}.{lesson.order}
@@ -211,12 +211,12 @@ export default function CourseSidebar({
                             <div className="flex items-center gap-1 mt-1.5">
                               <Clock
                                 size={11}
-                                className={completed ? 'text-emerald-600/60' : 'text-[#4A5568]'}
+                                className={completed ? 'text-emerald-600/60' : 'text-ink-5'}
                               />
                               <span
                                 className={cn(
                                   'text-xs font-mono',
-                                  completed ? 'text-emerald-600/60' : 'text-[#4A5568]'
+                                  completed ? 'text-emerald-600/60' : 'text-ink-5'
                                 )}
                               >
                                 {lesson.duration}m
@@ -231,7 +231,7 @@ export default function CourseSidebar({
               </AnimatePresence>
               <div className={cn(
                 'h-px mx-4 transition-colors duration-200',
-                moduleCompleted ? 'bg-emerald-500/10' : 'bg-[#2563EB]/10'
+                moduleCompleted ? 'bg-emerald-500/10' : 'bg-cobalt-600/10'
               )} />
             </div>
           )

@@ -45,17 +45,17 @@ export default function LessonViewer({
           className="max-w-4xl mx-auto px-5 md:px-8 py-8"
         >
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs text-[#94A3B8] mb-7 flex-wrap">
-            <span className="text-[#4A5568]">{course.title}</span>
-            <BreadcrumbChevron size={11} className="text-[#4A5568]" />
-            <span className="text-[#4A5568]">{currentModule?.title}</span>
-            <BreadcrumbChevron size={11} className="text-[#4A5568]" />
-            <span className="text-[#94A3B8]">{lesson.title}</span>
+          <div className="flex items-center gap-1.5 text-xs text-ink-3 mb-7 flex-wrap">
+            <span className="text-ink-5">{course.title}</span>
+            <BreadcrumbChevron size={11} className="text-ink-5" />
+            <span className="text-ink-5">{currentModule?.title}</span>
+            <BreadcrumbChevron size={11} className="text-ink-5" />
+            <span className="text-ink-3">{lesson.title}</span>
           </div>
 
           {/* Lesson title */}
           <div className="flex items-start justify-between gap-4 mb-7">
-            <h1 className="font-syne font-bold text-3xl md:text-4xl text-white leading-tight">
+            <h1 className="font-syne font-bold text-3xl md:text-4xl text-ink-1 leading-tight">
               {lesson.title}
             </h1>
             {isCompleted && (
@@ -73,16 +73,16 @@ export default function LessonViewer({
 
           {/* Description */}
           <div className="mb-9">
-            <p className="text-[#CBD5E1] text-base leading-relaxed">{lesson.description}</p>
+            <p className="text-ink-2 text-base leading-relaxed">{lesson.description}</p>
           </div>
 
           {/* Action bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pb-9 border-b border-[#2563EB]/10">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pb-9 border-b border-cobalt-600/10">
             {/* Prev */}
             <button
               onClick={onPrev}
               disabled={isFirst}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#0A1628] border border-[#2563EB]/20 text-[#94A3B8] hover:text-[#E2E8F0] hover:border-[#2563EB]/40 rounded-xl transition-all duration-200 text-base font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-surface border border-cobalt-600/20 text-ink-3 hover:text-ink-1 hover:border-cobalt-600/40 rounded-xl transition-all duration-200 text-base font-medium disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronLeft size={18} />
               Anterior
@@ -94,7 +94,7 @@ export default function LessonViewer({
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 ${
                 isCompleted
                   ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/8 hover:border-emerald-500/20'
-                  : 'bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-0.5'
+                  : 'bg-gradient-to-r from-cobalt-600 to-cobalt-500 text-white hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-0.5'
               }`}
             >
               {isCompleted ? (
@@ -114,7 +114,7 @@ export default function LessonViewer({
             <button
               onClick={onNext}
               disabled={isLast}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#0A1628] border border-[#2563EB]/20 text-[#94A3B8] hover:text-[#E2E8F0] hover:border-[#2563EB]/40 rounded-xl transition-all duration-200 text-base font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-surface border border-cobalt-600/20 text-ink-3 hover:text-ink-1 hover:border-cobalt-600/40 rounded-xl transition-all duration-200 text-base font-medium disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Siguiente
               <ChevronRight size={18} />

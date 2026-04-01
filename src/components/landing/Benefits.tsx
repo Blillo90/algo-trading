@@ -41,7 +41,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-b from-[#030810] to-[#050D1C] relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-gradient-to-b from-scene to-layer relative overflow-hidden">
       {/* Subtle grid */}
       <div
         className="absolute inset-0 opacity-40"
@@ -55,16 +55,16 @@ export default function Benefits() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-3 py-1 rounded-full border border-cobalt-600/30 bg-cobalt-600/10 text-accent-hi text-xs font-semibold uppercase tracking-wider mb-4">
             Lo que aprenderás
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold font-syne text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold font-syne text-ink-1 mb-4">
             Todo lo que necesitas para construir{' '}
-            <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               sistemas profesionales
             </span>
           </h2>
-          <p className="text-[#94A3B8] text-lg max-w-2xl mx-auto">
+          <p className="text-ink-3 text-lg max-w-2xl mx-auto">
             Un programa diseñado para transformar la forma en que operas en los mercados, con
             metodología cuantitativa y enfoque en resultados reales.
           </p>
@@ -75,20 +75,20 @@ export default function Benefits() {
           {BENEFITS.map((benefit) => (
             <div
               key={benefit.title}
-              className="group relative bg-[#0A1628]/70 border border-[#2563EB]/15 rounded-2xl p-7 hover:border-[#2563EB]/45 hover:bg-[#0A1628] hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-300 hover:-translate-y-1 cursor-default"
+              className="group relative bg-surface/70 border border-cobalt-600/15 rounded-2xl p-7 hover:border-cobalt-600/45 hover:bg-surface hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all duration-300 hover:-translate-y-1 cursor-default"
             >
               {/* Icon */}
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1B4FD8]/30 to-[#2563EB]/15 border border-[#2563EB]/25 flex items-center justify-center mb-5 group-hover:border-[#2563EB]/50 transition-colors duration-300">
-                <benefit.Icon size={22} className="text-[#60A5FA]" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cobalt-700/30 to-cobalt-600/15 border border-cobalt-600/25 flex items-center justify-center mb-5 group-hover:border-cobalt-600/50 transition-colors duration-300">
+                <benefit.Icon size={22} className="text-accent-hi" />
               </div>
 
-              <h3 className="text-[#E2E8F0] font-semibold font-syne text-lg mb-3">
+              <h3 className="text-ink-1 font-semibold font-syne text-lg mb-3">
                 {benefit.title}
               </h3>
-              <p className="text-[#94A3B8] text-sm leading-relaxed">{benefit.description}</p>
+              <p className="text-ink-3 text-sm leading-relaxed">{benefit.description}</p>
 
               {/* Corner accent */}
-              <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-[#2563EB]/40 group-hover:bg-[#60A5FA] transition-colors duration-300" />
+              <div className="absolute top-4 right-4 w-1.5 h-1.5 rounded-full bg-cobalt-600/40 group-hover:bg-accent-hi transition-colors duration-300" />
             </div>
           ))}
         </div>

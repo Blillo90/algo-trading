@@ -12,7 +12,7 @@ import Disclaimer from '@/components/landing/Disclaimer'
 
 export default function HomePage() {
   return (
-    <main className="bg-[#030810]">
+    <main className="bg-scene">
       <Navbar />
       <Hero />
       <PainPoints />

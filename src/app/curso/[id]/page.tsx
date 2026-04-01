@@ -14,10 +14,10 @@ import type { Lesson } from '@/types'
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-[#030810] flex items-center justify-center">
+    <div className="min-h-screen bg-scene flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-[#94A3B8] text-sm">Cargando curso...</p>
+        <div className="w-12 h-12 border-2 border-cobalt-600/30 border-t-cobalt-600 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-ink-3 text-sm">Cargando curso...</p>
       </div>
     </div>
   )
@@ -74,10 +74,10 @@ function CourseViewerInner() {
   if (authLoading || !user) return <LoadingScreen />
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#030810] flex items-center justify-center">
+      <div className="min-h-screen bg-scene flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[#E2E8F0] text-xl font-syne mb-3">Curso no encontrado</p>
-          <Link href="/cursos" className="text-[#60A5FA] text-sm hover:underline">
+          <p className="text-ink-1 text-xl font-syne mb-3">Curso no encontrado</p>
+          <Link href="/cursos" className="text-accent-hi text-sm hover:underline">
             Ver todos los cursos
           </Link>
         </div>
@@ -123,12 +123,12 @@ function CourseViewerInner() {
     totalLessons > 0 ? Math.round((completedLessonIds.size / totalLessons) * 100) : 0
 
   return (
-    <div className="h-screen flex flex-col bg-[#030810] overflow-hidden">
+    <div className="h-screen flex flex-col bg-scene overflow-hidden">
       {/* Course header bar */}
-      <header className="h-14 flex-shrink-0 bg-[#050D1C] border-b border-[#2563EB]/15 flex items-center px-4 gap-3">
+      <header className="h-14 flex-shrink-0 bg-layer border-b border-cobalt-600/15 flex items-center px-4 gap-3">
         {/* Mobile sidebar toggle */}
         <button
-          className="lg:hidden p-1.5 text-[#94A3B8] hover:text-[#E2E8F0] transition-colors"
+          className="lg:hidden p-1.5 text-ink-3 hover:text-ink-1 transition-colors"
           onClick={() => setSidebarOpen((v) => !v)}
           aria-label="Toggle sidebar"
         >
@@ -138,27 +138,27 @@ function CourseViewerInner() {
         {/* Back link */}
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-[#94A3B8] hover:text-[#E2E8F0] text-sm transition-colors"
+          className="flex items-center gap-1.5 text-ink-3 hover:text-ink-1 text-sm transition-colors"
         >
           <ArrowLeft size={15} />
           <span className="hidden sm:inline">Dashboard</span>
         </Link>
 
-        <div className="w-px h-5 bg-[#2563EB]/20 mx-1" />
+        <div className="w-px h-5 bg-cobalt-600/20 mx-1" />
 
         {/* Course title */}
-        <p className="text-[#E2E8F0] text-sm font-medium truncate flex-1">{course.title}</p>
+        <p className="text-ink-1 text-sm font-medium truncate flex-1">{course.title}</p>
 
         {/* Progress indicator */}
         <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
-          <div className="w-32 h-1.5 bg-[#0E1F3A] rounded-full overflow-hidden">
+          <div className="w-32 h-1.5 bg-well rounded-full overflow-hidden">
             <motion.div
               animate={{ width: `${progressPct}%` }}
               transition={{ duration: 0.5 }}
-              className="h-full bg-gradient-to-r from-[#2563EB] to-[#60A5FA] rounded-full"
+              className="h-full bg-gradient-to-r from-cobalt-600 to-cobalt-400 rounded-full"
             />
           </div>
-          <span className="text-[#60A5FA] text-xs font-mono font-bold">{progressPct}%</span>
+          <span className="text-accent-hi text-xs font-mono font-bold">{progressPct}%</span>
         </div>
       </header>
 
@@ -206,7 +206,7 @@ function CourseViewerInner() {
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <p className="text-[#94A3B8]">Selecciona una lección para comenzar.</p>
+              <p className="text-ink-3">Selecciona una lección para comenzar.</p>
             </div>
           )}
         </div>

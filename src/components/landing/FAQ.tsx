@@ -60,7 +60,7 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
-    <section id="faq" className="py-20 md:py-28 bg-[#050D1C] relative overflow-hidden">
+    <section id="faq" className="py-20 md:py-28 bg-layer relative overflow-hidden">
       {/* Background */}
       <div
         className="absolute inset-0 opacity-20"
@@ -74,16 +74,16 @@ export default function FAQ() {
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-3 py-1 rounded-full border border-cobalt-600/30 bg-cobalt-600/10 text-accent-hi text-xs font-semibold uppercase tracking-wider mb-4">
             FAQ
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold font-syne text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold font-syne text-ink-1 mb-4">
             Preguntas{' '}
-            <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               frecuentes
             </span>
           </h2>
-          <p className="text-[#94A3B8] text-lg">
+          <p className="text-ink-3 text-lg">
             Todo lo que necesitas saber antes de empezar.
           </p>
         </div>
@@ -95,25 +95,25 @@ export default function FAQ() {
             return (
               <div
                 key={i}
-                className={`bg-[#0A1628] border rounded-xl overflow-hidden transition-all duration-200 ${
-                  isOpen ? 'border-[#2563EB]/40' : 'border-[#2563EB]/15 hover:border-[#2563EB]/30'
+                className={`bg-surface border rounded-xl overflow-hidden transition-all duration-200 ${
+                  isOpen ? 'border-cobalt-600/40' : 'border-cobalt-600/15 hover:border-cobalt-600/30'
                 }`}
               >
                 <button
                   className="w-full flex items-center gap-4 p-5 text-left"
                   onClick={() => setOpen(isOpen ? null : i)}
                 >
-                  <span className="w-6 h-6 rounded-md bg-gradient-to-br from-[#2563EB]/25 to-[#1B4FD8]/15 border border-[#2563EB]/25 flex items-center justify-center text-[#60A5FA] text-xs font-bold font-mono flex-shrink-0">
+                  <span className="w-6 h-6 rounded-md bg-gradient-to-br from-cobalt-600/25 to-cobalt-700/15 border border-cobalt-600/25 flex items-center justify-center text-accent-hi text-xs font-bold font-mono flex-shrink-0">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <span
-                    className={`flex-1 font-medium text-sm ${isOpen ? 'text-[#E2E8F0]' : 'text-[#CBD5E1]'}`}
+                    className={`flex-1 font-medium text-sm ${isOpen ? 'text-ink-1' : 'text-ink-2'}`}
                   >
                     {faq.q}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`text-[#60A5FA] transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+                    className={`text-accent-hi transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
@@ -126,8 +126,8 @@ export default function FAQ() {
                       transition={{ duration: 0.25, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 border-t border-[#2563EB]/10">
-                        <p className="pt-4 text-[#94A3B8] text-sm leading-relaxed">{faq.a}</p>
+                      <div className="px-5 pb-5 border-t border-cobalt-600/10">
+                        <p className="pt-4 text-ink-3 text-sm leading-relaxed">{faq.a}</p>
                       </div>
                     </motion.div>
                   )}
@@ -139,10 +139,10 @@ export default function FAQ() {
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center">
-          <p className="text-[#94A3B8] text-sm mb-4">¿Tienes más preguntas?</p>
+          <p className="text-ink-3 text-sm mb-4">¿Tienes más preguntas?</p>
           <a
             href={`mailto:${BRAND.email}`}
-            className="inline-flex items-center gap-2 text-[#60A5FA] hover:text-white transition-colors text-sm font-medium border-b border-[#2563EB]/40 hover:border-[#60A5FA] pb-0.5"
+            className="inline-flex items-center gap-2 text-accent-hi hover:text-ink-1 transition-colors text-sm font-medium border-b border-cobalt-600/40 hover:border-accent-hi pb-0.5"
           >
             Escríbenos a {BRAND.email}
           </a>

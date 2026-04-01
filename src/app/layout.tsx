@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Syne, DM_Sans } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
+import { ThemeProvider } from '@/context/ThemeContext'
+
+const antiFlashScript = `(function(){try{var t=localStorage.getItem('re-theme');if(t&&['dark','graphite','fog','light'].includes(t)){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`
 
 const syne = Syne({
   subsets: ['latin'],
@@ -74,6 +77,8 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${syne.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
+        {/* Anti-flash: reads localStorage before first paint to avoid theme flicker */}
+        <script dangerouslySetInnerHTML={{ __html: antiFlashScript }} />
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"
@@ -83,10 +88,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-[#030810] text-[#E2E8F0] antialiased" suppressHydrationWarning>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body className="antialiased" suppressHydrationWarning>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

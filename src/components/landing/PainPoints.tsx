@@ -35,23 +35,23 @@ const PAIN_POINTS = [
 
 export default function PainPoints() {
   return (
-    <section className="py-20 md:py-28 bg-[#030810] relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-scene relative overflow-hidden">
       {/* Subtle top divider glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px bg-gradient-to-r from-transparent via-[#2563EB]/30 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px bg-gradient-to-r from-transparent via-cobalt-600/30 to-transparent" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="inline-block px-3 py-1 rounded-full border border-[#2563EB]/30 bg-[#2563EB]/10 text-[#60A5FA] text-xs font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-3 py-1 rounded-full border border-cobalt-600/30 bg-cobalt-600/10 text-accent-hi text-xs font-semibold uppercase tracking-wider mb-4">
             El problema real
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold font-syne text-white mb-5">
+          <h2 className="text-3xl md:text-5xl font-bold font-syne text-ink-1 mb-5">
             El trading sin proceso{' '}
-            <span className="bg-gradient-to-r from-[#60A5FA] to-[#2563EB] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cobalt-400 to-cobalt-600 bg-clip-text text-transparent">
               no escala
             </span>
           </h2>
-          <p className="text-[#94A3B8] text-lg max-w-2xl mx-auto">
+          <p className="text-ink-3 text-lg max-w-2xl mx-auto">
             La mayoría de traders no falla por falta de inteligencia ni de información.
             Falla por ausencia de un proceso sistemático, validado y replicable.
           </p>
@@ -62,15 +62,15 @@ export default function PainPoints() {
           {PAIN_POINTS.map((point) => (
             <div
               key={point.title}
-              className="group bg-[#0A1628]/80 border border-[#2563EB]/12 rounded-2xl p-6 hover:border-[#2563EB]/30 hover:bg-[#0A1628] transition-all duration-300"
+              className="group bg-surface/80 border border-cobalt-600/12 rounded-2xl p-6 hover:border-cobalt-600/30 hover:bg-surface transition-all duration-300"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center mb-4 group-hover:bg-[#2563EB]/15 transition-colors duration-300">
-                <point.Icon size={18} className="text-[#60A5FA]" />
+              <div className="w-10 h-10 rounded-xl bg-cobalt-600/10 border border-cobalt-600/20 flex items-center justify-center mb-4 group-hover:bg-cobalt-600/15 transition-colors duration-300">
+                <point.Icon size={18} className="text-accent-hi" />
               </div>
-              <h3 className="font-syne font-semibold text-[#E2E8F0] text-base mb-3 leading-tight">
+              <h3 className="font-syne font-semibold text-ink-1 text-base mb-3 leading-tight">
                 {point.title}
               </h3>
-              <p className="text-[#64748B] text-sm leading-relaxed group-hover:text-[#94A3B8] transition-colors duration-300">
+              <p className="text-ink-4 text-sm leading-relaxed group-hover:text-ink-3 transition-colors duration-300">
                 {point.body}
               </p>
             </div>
@@ -80,11 +80,11 @@ export default function PainPoints() {
         {/* Solution bridge */}
         <div className="mt-14 text-center">
           <div className="inline-block max-w-2xl">
-            <div className="h-px bg-gradient-to-r from-transparent via-[#2563EB]/25 to-transparent mb-10" />
-            <p className="text-[#CBD5E1] text-lg font-medium mb-2">
+            <div className="h-px bg-gradient-to-r from-transparent via-cobalt-600/25 to-transparent mb-10" />
+            <p className="text-ink-2 text-lg font-medium mb-2">
               La respuesta no es otro indicador técnico ni otra señal de entrada.
             </p>
-            <p className="text-[#64748B] text-base">
+            <p className="text-ink-4 text-base">
               Es un proceso sistemático: hipótesis, validación estadística, gestión de riesgo y
               despliegue controlado. Eso es exactamente lo que enseñamos.
             </p>
