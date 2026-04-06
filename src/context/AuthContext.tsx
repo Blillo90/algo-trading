@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AuthUser } from '@/types'
 import { supabase } from '@/lib/supabase/client'
@@ -39,29 +39,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
+  // Monotonically increasing counter used to cancel stale buildAuthUser promises.
+  // When logout fires (or SIGNED_OUT arrives), we increment this so any in-flight
+  // async call can detect it is stale and skip the setUser call.
+  const sessionGenRef = useRef(0)
+
   useEffect(() => {
-    // Restore session on mount
+    let isMounted = true
+
+    // Restore session on mount — runs once
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!isMounted) return
       if (session?.user) {
         const authUser = await buildAuthUser(session.user.id, session.user.email!)
-        setUser(authUser)
+        if (isMounted) setUser(authUser)
       }
-      setIsLoading(false)
+      if (isMounted) setIsLoading(false)
     })
 
-    // Keep in sync with Supabase auth state (tab focus, token refresh, etc.)
+    // Keep in sync across tab focus, token refresh, sign-in/out from other tabs
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
+        // Snapshot the current generation before the async gap
+        const gen = ++sessionGenRef.current
         const authUser = await buildAuthUser(session.user.id, session.user.email!)
-        setUser(authUser)
+        // Only apply the result if no newer auth event has superseded this one
+        if (sessionGenRef.current === gen) {
+          setUser(authUser)
+          setIsLoading(false)
+        }
       } else {
+        // SIGNED_OUT or expired session — invalidate any in-flight buildAuthUser calls
+        sessionGenRef.current++
         setUser(null)
+        setIsLoading(false)
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   const login = useCallback(async (email: string, password: string): Promise<LoginResult> => {
@@ -73,9 +93,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut()
+    // 1. Cancel any in-flight buildAuthUser calls immediately
+    sessionGenRef.current++
+
+    // 2. Clear local state right away — UI responds without waiting for network
     setUser(null)
+
+    // 3. Invalidate the Supabase session (clears localStorage tokens)
+    await supabase.auth.signOut()
+
+    // 4. Navigate to home and force server components to re-render
     router.push('/')
+    router.refresh()
   }, [router])
 
   return (
