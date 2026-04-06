@@ -98,8 +98,8 @@ export default function AdminPage() {
   // ── Auth guard ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (isLoading) return
-    if (!user) { router.push('/login'); return }
-    if (user.role !== 'admin') { router.push('/dashboard'); return }
+    if (!user) { router.replace('/login'); return }
+    if (user.role !== 'admin') { router.replace('/dashboard'); return }
     setReady(true)
   }, [user, isLoading, router])
 
