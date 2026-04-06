@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 async function buildAuthUser(userId: string, email: string): Promise<AuthUser> {
   const [{ data: profile }, { data: enrollments }] = await Promise.all([
-    supabase.from('profiles').select('full_name').eq('id', userId).single(),
+    supabase.from('profiles').select('full_name, role').eq('id', userId).single(),
     supabase.from('enrollments').select('course_id').eq('user_id', userId),
   ])
 
@@ -29,6 +29,7 @@ async function buildAuthUser(userId: string, email: string): Promise<AuthUser> {
     id: userId,
     email,
     name: profile?.full_name ?? email.split('@')[0],
+    role: (profile?.role ?? 'user') as 'user' | 'admin',
     enrolledCourseIds: enrollments?.map((e: { course_id: string }) => e.course_id) ?? [],
   }
 }

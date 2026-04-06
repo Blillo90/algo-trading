@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { Menu, X, ChevronDown, LayoutDashboard, LogOut, Palette } from 'lucide-react'
+import { Menu, X, ChevronDown, LayoutDashboard, LogOut, Palette, Shield } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useTheme, THEMES } from '@/context/ThemeContext'
 import { cn } from '@/lib/utils'
@@ -214,6 +214,15 @@ export default function Navbar() {
                       <LayoutDashboard size={15} className="text-accent-hi" />
                       Mi Dashboard
                     </Link>
+                    {user.role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-ink-1 hover:bg-cobalt-700/15 transition-colors duration-150 border-t border-cobalt-600/10"
+                      >
+                        <Shield size={15} className="text-cobalt-400" />
+                        Panel de admin
+                      </Link>
+                    )}
                     <button
                       onClick={logout}
                       className="w-full flex items-center gap-2 px-4 py-3 text-sm text-ink-3 hover:bg-cobalt-700/15 hover:text-ink-1 transition-colors duration-150 border-t border-cobalt-600/10"
@@ -308,6 +317,15 @@ export default function Navbar() {
                       <LayoutDashboard size={15} className="text-accent-hi" />
                       Mi Dashboard
                     </Link>
+                    {user.role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-ink-1 hover:bg-surface rounded-lg transition-colors"
+                      >
+                        <Shield size={15} className="text-cobalt-400" />
+                        Panel de admin
+                      </Link>
+                    )}
                     <button
                       onClick={logout}
                       className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-ink-3 hover:bg-surface rounded-lg transition-colors"
