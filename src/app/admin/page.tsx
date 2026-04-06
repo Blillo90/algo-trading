@@ -32,6 +32,11 @@ interface AdminUser {
   last_seen_at: string | null
   created_at: string
   enrolledCourseIds: string[]
+  // Lesson completion data per course (from lesson_progress)
+  completedLessonsPerCourse: Record<string, number>
+  // Most recent course access (from course_progress)
+  lastAccessedAt: string | null
+  // Estimated study time in minutes (from completed lessons × duration)
   totalMinutes: number
 }
 
@@ -51,7 +56,12 @@ function formatMinutes(minutes: number): string {
 }
 
 function initials(name: string): string {
-  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function formatDate(iso: string): string {
@@ -62,10 +72,30 @@ function formatDate(iso: string): string {
   })
 }
 
+function formatLastAccessed(iso: string | null): string {
+  if (!iso) return 'Nunca'
+  const diff = Date.now() - new Date(iso).getTime()
+  const days = Math.floor(diff / 86_400_000)
+  if (days === 0) return 'Hoy'
+  if (days === 1) return 'Ayer'
+  if (days < 7) return `Hace ${days} días`
+  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+}
+
 const LEVEL_LABEL: Record<string, string> = {
   beginner: 'Básico',
   intermediate: 'Intermedio',
   advanced: 'Avanzado',
+}
+
+// Lesson duration lookup built once at module level (static data)
+const LESSON_DURATION_MAP: Record<string, number> = {}
+for (const course of COURSES) {
+  for (const mod of course.modules) {
+    for (const lesson of mod.lessons) {
+      LESSON_DURATION_MAP[lesson.id] = lesson.duration
+    }
+  }
 }
 
 // ─── Loading screen ───────────────────────────────────────────────────────────
@@ -102,7 +132,7 @@ export default function AdminPage() {
       const { data: sessionData } = await supabase.auth.getSession()
       const accessToken = sessionData.session?.access_token
 
-      // All queries in parallel: DB tables + email fetch
+      // Email fetch via service-role API route
       const emailFetch: Promise<{ users?: { id: string; email: string }[] }> = accessToken
         ? fetch('/api/admin/users', {
             headers: { Authorization: `Bearer ${accessToken}` },
@@ -111,9 +141,12 @@ export default function AdminPage() {
             .catch(() => ({ users: [] }))
         : Promise.resolve({ users: [] })
 
+      // All 6 queries in parallel
       const [
         profilesResult,
         enrollmentsResult,
+        lessonProgressResult,
+        courseProgressResult,
         timeSessionsResult,
         emailResult,
       ] = await Promise.all([
@@ -122,6 +155,14 @@ export default function AdminPage() {
           .select('id, full_name, role, last_seen_at, created_at')
           .order('created_at', { ascending: true }),
         supabase.from('enrollments').select('user_id, course_id'),
+        // Only fetch completed rows — the admin RLS (is_admin()) allows reading all users' rows
+        supabase
+          .from('lesson_progress')
+          .select('user_id, course_id, lesson_id')
+          .eq('completed', true),
+        supabase
+          .from('course_progress')
+          .select('user_id, course_id, last_accessed_at'),
         supabase
           .from('course_time_sessions')
           .select('user_id, duration_seconds')
@@ -131,22 +172,49 @@ export default function AdminPage() {
 
       const { data: profiles } = profilesResult
       const { data: enrollments } = enrollmentsResult
+      const { data: lessonProgress } = lessonProgressResult
+      const { data: courseProgress } = courseProgressResult
       const { data: timeSessions } = timeSessionsResult
       const authUsers = emailResult.users ?? []
 
+      // Email map
       const emailMap: Record<string, string> = Object.fromEntries(
         authUsers.map((u) => [u.id, u.email])
       )
 
-      const timeMap: Record<string, number> = {}
-      for (const ts of timeSessions ?? []) {
-        timeMap[ts.user_id] = (timeMap[ts.user_id] ?? 0) + (ts.duration_seconds ?? 0)
-      }
-
+      // Enrollment map: userId → courseId[]
       const enrollMap: Record<string, string[]> = {}
       for (const e of enrollments ?? []) {
         if (!enrollMap[e.user_id]) enrollMap[e.user_id] = []
         enrollMap[e.user_id].push(e.course_id)
+      }
+
+      // Lesson completion map: userId → { courseId: completedCount }
+      // Also accumulate estimated study minutes per user from lesson durations
+      const completedMap: Record<string, Record<string, number>> = {}
+      const estimatedMinutesMap: Record<string, number> = {}
+      for (const lp of lessonProgress ?? []) {
+        if (!completedMap[lp.user_id]) completedMap[lp.user_id] = {}
+        completedMap[lp.user_id][lp.course_id] =
+          (completedMap[lp.user_id][lp.course_id] ?? 0) + 1
+        estimatedMinutesMap[lp.user_id] =
+          (estimatedMinutesMap[lp.user_id] ?? 0) + (LESSON_DURATION_MAP[lp.lesson_id] ?? 0)
+      }
+
+      // Last accessed map: userId → most recent last_accessed_at across all courses
+      const lastAccessedMap: Record<string, string> = {}
+      for (const cp of courseProgress ?? []) {
+        if (!cp.last_accessed_at) continue
+        const existing = lastAccessedMap[cp.user_id]
+        if (!existing || cp.last_accessed_at > existing) {
+          lastAccessedMap[cp.user_id] = cp.last_accessed_at
+        }
+      }
+
+      // Time sessions fallback map (used if lesson_progress yields no data)
+      const timeMap: Record<string, number> = {}
+      for (const ts of timeSessions ?? []) {
+        timeMap[ts.user_id] = (timeMap[ts.user_id] ?? 0) + (ts.duration_seconds ?? 0)
       }
 
       setUsers(
@@ -158,7 +226,11 @@ export default function AdminPage() {
           last_seen_at: p.last_seen_at,
           created_at: p.created_at,
           enrolledCourseIds: enrollMap[p.id] ?? [],
-          totalMinutes: Math.round((timeMap[p.id] ?? 0) / 60),
+          completedLessonsPerCourse: completedMap[p.id] ?? {},
+          lastAccessedAt: lastAccessedMap[p.id] ?? null,
+          // Prefer estimated minutes from lesson progress; fall back to time sessions
+          totalMinutes:
+            estimatedMinutesMap[p.id] ?? Math.round((timeMap[p.id] ?? 0) / 60),
         }))
       )
     } finally {
@@ -187,6 +259,10 @@ export default function AdminPage() {
       setUsers((prev) =>
         prev.map((u) => (u.id === target.id ? { ...u, role: newRole } : u))
       )
+      // Collapse the course panel if the user was just made admin
+      if (newRole === 'admin' && expandedUserId === target.id) {
+        setExpandedUserId(null)
+      }
     }
     setTogglingRoleId(null)
   }
@@ -238,16 +314,24 @@ export default function AdminPage() {
       // Network error — revert optimistic update
       setUsers((prev) => prev.map((u) => (u.id === target.id ? target : u)))
     } finally {
-      setPendingKeys((prev) => { const s = new Set(prev); s.delete(key); return s })
+      setPendingKeys((prev) => {
+        const s = new Set(prev)
+        s.delete(key)
+        return s
+      })
     }
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
-  if (isLoading || (!user || user.role !== 'admin') || dataLoading) return <LoadingScreen />
+  if (isLoading || !user || user.role !== 'admin' || dataLoading) return <LoadingScreen />
 
+  // Stats — only count non-admin users for enrollments and hours
+  const normalUsers = users.filter((u) => u.role !== 'admin')
   const onlineCount = users.filter((u) => isOnline(u.last_seen_at)).length
-  const totalEnrollments = users.reduce((acc, u) => acc + u.enrolledCourseIds.length, 0)
-  const totalHours = Math.round(users.reduce((acc, u) => acc + u.totalMinutes, 0) / 60)
+  const totalEnrollments = normalUsers.reduce((acc, u) => acc + u.enrolledCourseIds.length, 0)
+  const totalHours = Math.round(
+    normalUsers.reduce((acc, u) => acc + u.totalMinutes, 0) / 60
+  )
 
   return (
     <main className="min-h-screen bg-scene">
@@ -302,8 +386,8 @@ export default function AdminPage() {
           {[
             { title: 'Total usuarios', value: users.length, subtitle: 'registrados', icon: Users },
             { title: 'Online ahora', value: onlineCount, subtitle: 'últimos 5 min', icon: Wifi },
-            { title: 'Matrículas', value: totalEnrollments, subtitle: 'en cursos activos', icon: BookOpen },
-            { title: 'Horas de formación', value: `${totalHours}h`, subtitle: 'tiempo total acumulado', icon: Clock },
+            { title: 'Matrículas activas', value: totalEnrollments, subtitle: 'en cursos', icon: BookOpen },
+            { title: 'Horas de formación', value: `${totalHours}h`, subtitle: 'tiempo estimado acumulado', icon: Clock },
           ].map((stat, i) => (
             <motion.div
               key={stat.title}
@@ -336,7 +420,7 @@ export default function AdminPage() {
 
             {/* Desktop table header */}
             <div className="hidden lg:grid grid-cols-[minmax(0,2fr)_100px_100px_minmax(0,1.5fr)_80px_auto] gap-4 px-6 py-3 border-b border-cobalt-600/10 bg-cobalt-950/30">
-              {['Usuario', 'Rol', 'Estado', 'Cursos activos', 'Tiempo', 'Acciones'].map((h) => (
+              {['Usuario', 'Rol', 'Estado', 'Cursos / progreso', 'Tiempo', 'Acciones'].map((h) => (
                 <span key={h} className="text-ink-4 text-xs font-medium uppercase tracking-wider">
                   {h}
                 </span>
@@ -352,9 +436,27 @@ export default function AdminPage() {
               users.map((u, i) => {
                 const online = isOnline(u.last_seen_at)
                 const isSelf = u.id === user?.id
-                const isExpanded = expandedUserId === u.id
-                const courseNames = u.enrolledCourseIds.map(
-                  (id) => COURSES.find((c) => c.id === id)?.title ?? id
+                const isAdmin = u.role === 'admin'
+                const isExpanded = expandedUserId === u.id && !isAdmin
+
+                // Course names with completion info (only for normal users)
+                const courseEntries = u.enrolledCourseIds.map((id) => {
+                  const course = COURSES.find((c) => c.id === id)
+                  const totalLessons = course
+                    ? course.modules.reduce((acc, m) => acc + m.lessons.length, 0)
+                    : 0
+                  const completed = u.completedLessonsPerCourse[id] ?? 0
+                  return {
+                    id,
+                    name: course?.title ?? id,
+                    completed,
+                    totalLessons,
+                  }
+                })
+
+                const totalCompleted = Object.values(u.completedLessonsPerCourse).reduce(
+                  (a, b) => a + b,
+                  0
                 )
 
                 return (
@@ -371,17 +473,32 @@ export default function AdminPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-ink-1 font-semibold text-sm">{u.full_name}</span>
-                          {u.role === 'admin' && <AdminBadge />}
+                          {isAdmin && <AdminBadge />}
                           <OnlineDot online={online} />
                         </div>
                         <p className="text-ink-3 text-xs mt-0.5 truncate">{u.email}</p>
-                        <p className="text-ink-4 text-xs mt-0.5">Desde {formatDate(u.created_at)}</p>
+                        <p className="text-ink-4 text-xs mt-0.5">
+                          Desde {formatDate(u.created_at)}
+                          {u.lastAccessedAt && (
+                            <> · Acceso: {formatLastAccessed(u.lastAccessedAt)}</>
+                          )}
+                        </p>
 
-                        {courseNames.length > 0 && (
+                        {!isAdmin && courseEntries.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1">
-                            {courseNames.map((name) => (
-                              <span key={name} className="px-2 py-0.5 bg-cobalt-950/50 border border-cobalt-600/15 rounded text-ink-3 text-xs">
-                                {name.length > 30 ? name.slice(0, 30) + '…' : name}
+                            {courseEntries.map((entry) => (
+                              <span
+                                key={entry.id}
+                                className="px-2 py-0.5 bg-cobalt-950/50 border border-cobalt-600/15 rounded text-ink-3 text-xs"
+                              >
+                                {entry.name.length > 28
+                                  ? entry.name.slice(0, 28) + '…'
+                                  : entry.name}
+                                {entry.totalLessons > 0 && (
+                                  <span className="ml-1 text-ink-5">
+                                    {entry.completed}/{entry.totalLessons}
+                                  </span>
+                                )}
                               </span>
                             ))}
                           </div>
@@ -389,7 +506,7 @@ export default function AdminPage() {
 
                         <div className="mt-3 flex items-center gap-2 flex-wrap">
                           <span className="text-ink-3 text-xs font-mono mr-auto">
-                            {formatMinutes(u.totalMinutes)}
+                            {isAdmin ? '—' : formatMinutes(u.totalMinutes)}
                           </span>
                           {!isSelf && (
                             <RoleButton
@@ -398,10 +515,13 @@ export default function AdminPage() {
                               onToggle={() => toggleRole(u)}
                             />
                           )}
-                          <ExpandButton
-                            expanded={isExpanded}
-                            onToggle={() => setExpandedUserId(isExpanded ? null : u.id)}
-                          />
+                          {/* Course management only for normal users */}
+                          {!isAdmin && (
+                            <ExpandButton
+                              expanded={isExpanded}
+                              onToggle={() => setExpandedUserId(isExpanded ? null : u.id)}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -415,13 +535,22 @@ export default function AdminPage() {
                         <div className="min-w-0">
                           <p className="text-ink-1 font-medium text-sm truncate">{u.full_name}</p>
                           <p className="text-ink-3 text-xs truncate">{u.email}</p>
-                          <p className="text-ink-4 text-xs">{formatDate(u.created_at)}</p>
+                          <p className="text-ink-4 text-xs">
+                            {formatDate(u.created_at)}
+                            {u.lastAccessedAt && !isAdmin && (
+                              <> · {formatLastAccessed(u.lastAccessedAt)}</>
+                            )}
+                          </p>
                         </div>
                       </div>
 
                       {/* Rol */}
                       <div>
-                        {u.role === 'admin' ? <AdminBadge /> : <span className="text-ink-4 text-xs font-mono">user</span>}
+                        {isAdmin ? (
+                          <AdminBadge />
+                        ) : (
+                          <span className="text-ink-4 text-xs font-mono">user</span>
+                        )}
                       </div>
 
                       {/* Estado */}
@@ -432,14 +561,36 @@ export default function AdminPage() {
                         </span>
                       </div>
 
-                      {/* Cursos activos */}
-                      <div className="flex flex-wrap gap-1">
-                        {courseNames.length > 0 ? (
-                          courseNames.map((name) => (
-                            <span key={name} className="px-2 py-0.5 bg-cobalt-950/50 border border-cobalt-600/15 rounded text-ink-3 text-xs">
-                              {name.length > 26 ? name.slice(0, 26) + '…' : name}
-                            </span>
-                          ))
+                      {/* Cursos / progreso */}
+                      <div className="flex flex-col gap-1">
+                        {isAdmin ? (
+                          <span className="text-ink-4 text-xs">—</span>
+                        ) : courseEntries.length > 0 ? (
+                          <>
+                            {courseEntries.map((entry) => (
+                              <div key={entry.id} className="flex items-center gap-1.5">
+                                <span className="px-2 py-0.5 bg-cobalt-950/50 border border-cobalt-600/15 rounded text-ink-3 text-xs">
+                                  {entry.name.length > 22
+                                    ? entry.name.slice(0, 22) + '…'
+                                    : entry.name}
+                                </span>
+                                {entry.totalLessons > 0 && (
+                                  <span
+                                    className={`text-xs font-mono ${
+                                      entry.completed > 0 ? 'text-cobalt-400' : 'text-ink-5'
+                                    }`}
+                                  >
+                                    {entry.completed}/{entry.totalLessons}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                            {totalCompleted > 0 && (
+                              <span className="text-ink-5 text-xs">
+                                {totalCompleted} lecc. completadas
+                              </span>
+                            )}
+                          </>
                         ) : (
                           <span className="text-ink-4 text-xs">Sin cursos</span>
                         )}
@@ -447,7 +598,9 @@ export default function AdminPage() {
 
                       {/* Tiempo */}
                       <div>
-                        <span className="text-ink-2 text-sm font-mono">{formatMinutes(u.totalMinutes)}</span>
+                        <span className="text-ink-2 text-sm font-mono">
+                          {isAdmin ? '—' : formatMinutes(u.totalMinutes)}
+                        </span>
                       </div>
 
                       {/* Acciones */}
@@ -460,16 +613,19 @@ export default function AdminPage() {
                           />
                         )}
                         {isSelf && <span className="text-ink-4 text-xs">Tú</span>}
-                        <ExpandButton
-                          expanded={isExpanded}
-                          onToggle={() => setExpandedUserId(isExpanded ? null : u.id)}
-                        />
+                        {/* Course management only for normal users */}
+                        {!isAdmin && (
+                          <ExpandButton
+                            expanded={isExpanded}
+                            onToggle={() => setExpandedUserId(isExpanded ? null : u.id)}
+                          />
+                        )}
                       </div>
                     </div>
 
-                    {/* ── Expanded course management panel ── */}
+                    {/* ── Expanded course management panel (normal users only) ── */}
                     <AnimatePresence>
-                      {isExpanded && (
+                      {isExpanded && !isAdmin && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
@@ -492,6 +648,7 @@ export default function AdminPage() {
                                   course={course}
                                   enrolled={u.enrolledCourseIds.includes(course.id)}
                                   pending={pendingKeys.has(`${u.id}:${course.id}`)}
+                                  completedCount={u.completedLessonsPerCourse[course.id] ?? 0}
                                   onToggle={() => toggleEnrollment(u, course.id)}
                                 />
                               ))}
@@ -517,7 +674,9 @@ function Avatar({ name, small }: { name: string; small?: boolean }) {
   const size = small ? 'w-9 h-9' : 'w-10 h-10'
   const text = small ? 'text-xs' : 'text-sm'
   return (
-    <div className={`${size} rounded-xl bg-gradient-to-br from-cobalt-600/30 to-cobalt-800/20 border border-cobalt-600/20 flex items-center justify-center flex-shrink-0`}>
+    <div
+      className={`${size} rounded-xl bg-gradient-to-br from-cobalt-600/30 to-cobalt-800/20 border border-cobalt-600/20 flex items-center justify-center flex-shrink-0`}
+    >
       <span className={`text-cobalt-300 ${text} font-bold font-mono`}>{initials(name)}</span>
     </div>
   )
@@ -533,11 +692,23 @@ function AdminBadge() {
 
 function OnlineDot({ online }: { online: boolean }) {
   return (
-    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${online ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' : 'bg-ink-4'}`} />
+    <span
+      className={`w-2 h-2 rounded-full flex-shrink-0 ${
+        online ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' : 'bg-ink-4'
+      }`}
+    />
   )
 }
 
-function RoleButton({ user, loading, onToggle }: { user: AdminUser; loading: boolean; onToggle: () => void }) {
+function RoleButton({
+  user,
+  loading,
+  onToggle,
+}: {
+  user: AdminUser
+  loading: boolean
+  onToggle: () => void
+}) {
   const isAdmin = user.role === 'admin'
   return (
     <button
@@ -552,15 +723,25 @@ function RoleButton({ user, loading, onToggle }: { user: AdminUser; loading: boo
       {loading ? (
         <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
       ) : isAdmin ? (
-        <><ShieldOff size={12} /> Quitar admin</>
+        <>
+          <ShieldOff size={12} /> Quitar admin
+        </>
       ) : (
-        <><Shield size={12} /> Hacer admin</>
+        <>
+          <Shield size={12} /> Hacer admin
+        </>
       )}
     </button>
   )
 }
 
-function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }) {
+function ExpandButton({
+  expanded,
+  onToggle,
+}: {
+  expanded: boolean
+  onToggle: () => void
+}) {
   return (
     <button
       onClick={onToggle}
@@ -569,7 +750,10 @@ function ExpandButton({ expanded, onToggle }: { expanded: boolean; onToggle: () 
     >
       <BookOpen size={12} />
       Cursos
-      <ChevronDown size={12} className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+      <ChevronDown
+        size={12}
+        className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+      />
     </button>
   )
 }
@@ -578,51 +762,88 @@ function CourseAccessCard({
   course,
   enrolled,
   pending,
+  completedCount,
   onToggle,
 }: {
   course: Course
   enrolled: boolean
   pending: boolean
+  completedCount: number
   onToggle: () => void
 }) {
+  const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0)
+  const pct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+  const hasProgress = completedCount > 0
+
   return (
-    <div className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all duration-200 ${
-      enrolled
-        ? 'bg-emerald-500/5 border-emerald-500/20'
-        : 'bg-cobalt-950/30 border-cobalt-600/10'
-    }`}>
-      <div className="min-w-0 flex-1">
-        <p className="text-ink-1 text-sm font-medium leading-snug">
-          {course.title.length > 40 ? course.title.slice(0, 40) + '…' : course.title}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className={`text-xs font-mono ${enrolled ? 'text-emerald-400' : 'text-ink-4'}`}>
-            {enrolled ? '✓ Activo' : '— Sin acceso'}
-          </span>
-          <span className="text-ink-5 text-xs">·</span>
-          <span className="text-ink-4 text-xs">{LEVEL_LABEL[course.level] ?? course.level}</span>
-          <span className="text-ink-5 text-xs">·</span>
-          <span className="text-ink-4 text-xs">{course.duration}h</span>
+    <div
+      className={`flex flex-col gap-2.5 p-3 rounded-xl border transition-all duration-200 ${
+        enrolled
+          ? 'bg-emerald-500/5 border-emerald-500/20'
+          : 'bg-cobalt-950/30 border-cobalt-600/10'
+      }`}
+    >
+      {/* Course info */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-ink-1 text-sm font-medium leading-snug">
+            {course.title.length > 40 ? course.title.slice(0, 40) + '…' : course.title}
+          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`text-xs font-mono ${enrolled ? 'text-emerald-400' : 'text-ink-4'}`}>
+              {enrolled ? '✓ Activo' : '— Sin acceso'}
+            </span>
+            <span className="text-ink-5 text-xs">·</span>
+            <span className="text-ink-4 text-xs">{LEVEL_LABEL[course.level] ?? course.level}</span>
+            <span className="text-ink-5 text-xs">·</span>
+            <span className="text-ink-4 text-xs">{course.duration}h</span>
+          </div>
         </div>
+
+        <button
+          onClick={onToggle}
+          disabled={pending}
+          className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-50 ${
+            enrolled
+              ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20'
+              : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+          }`}
+        >
+          {pending ? (
+            <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+          ) : enrolled ? (
+            <>
+              <X size={12} /> Revocar
+            </>
+          ) : (
+            <>
+              <Plus size={12} /> Conceder
+            </>
+          )}
+        </button>
       </div>
 
-      <button
-        onClick={onToggle}
-        disabled={pending}
-        className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-50 ${
-          enrolled
-            ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20'
-            : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
-        }`}
-      >
-        {pending ? (
-          <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-        ) : enrolled ? (
-          <><X size={12} /> Revocar</>
-        ) : (
-          <><Plus size={12} /> Conceder</>
-        )}
-      </button>
+      {/* Progress bar — only shown if user has accessed the course */}
+      {enrolled && totalLessons > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-ink-4 text-xs">
+              {hasProgress
+                ? `${completedCount} / ${totalLessons} lecciones`
+                : 'Sin progreso aún'}
+            </span>
+            {hasProgress && (
+              <span className="text-cobalt-400 text-xs font-mono">{pct}%</span>
+            )}
+          </div>
+          <div className="h-1 w-full bg-cobalt-950/50 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-cobalt-600 to-cobalt-400 rounded-full transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
