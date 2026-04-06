@@ -15,102 +15,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 
 For Vercel: add both variables in Project Settings → Environment Variables.
 
-## 3. Run SQL schema
+## 3. Run SQL migrations
 
-In the Supabase dashboard → SQL Editor, run the following:
+In the Supabase dashboard → **SQL Editor**, run the two migration files **in order**:
 
-```sql
--- ─────────────────────────────────────────────
--- Profiles (auto-created on user sign-up)
--- ─────────────────────────────────────────────
-create table if not exists public.profiles (
-  id          uuid primary key references auth.users on delete cascade,
-  full_name   text,
-  avatar_url  text,
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
-);
-
--- Trigger: create profile row when a user signs up
-create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path = public as $$
-begin
-  insert into public.profiles (id, full_name)
-  values (new.id, new.raw_user_meta_data->>'full_name');
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
-
--- ─────────────────────────────────────────────
--- Enrollments
--- ─────────────────────────────────────────────
-create table if not exists public.enrollments (
-  id          uuid primary key default gen_random_uuid(),
-  user_id     uuid not null references auth.users on delete cascade,
-  course_id   text not null,  -- matches id in src/data/courses.ts
-  enrolled_at timestamptz not null default now(),
-  unique(user_id, course_id)
-);
-
--- ─────────────────────────────────────────────
--- Lesson progress
--- ─────────────────────────────────────────────
-create table if not exists public.lesson_progress (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references auth.users on delete cascade,
-  course_id        text not null,
-  lesson_id        text not null,
-  completed        boolean not null default false,
-  completed_at     timestamptz,
-  last_accessed_at timestamptz not null default now(),
-  unique(user_id, lesson_id)
-);
-
--- ─────────────────────────────────────────────
--- Course progress (last-accessed lesson)
--- ─────────────────────────────────────────────
-create table if not exists public.course_progress (
-  id                      uuid primary key default gen_random_uuid(),
-  user_id                 uuid not null references auth.users on delete cascade,
-  course_id               text not null,
-  last_accessed_lesson_id text,
-  last_accessed_at        timestamptz not null default now(),
-  unique(user_id, course_id)
-);
+```
+supabase/migrations/001_initial_schema.sql   ← tables, trigger, base RLS
+supabase/migrations/002_admin_presence_time.sql  ← admin role, online tracking, time sessions
 ```
 
-## 4. Row Level Security (RLS)
+Copy each file's content and paste it into a new SQL Editor query, then run it.
 
-```sql
--- Enable RLS on all tables
-alter table public.profiles       enable row level security;
-alter table public.enrollments    enable row level security;
-alter table public.lesson_progress enable row level security;
-alter table public.course_progress enable row level security;
-
--- Profiles: users can read and update their own row
-create policy "profiles: own row" on public.profiles
-  for all using (auth.uid() = id);
-
--- Enrollments: users can read their own enrollments
-create policy "enrollments: own rows" on public.enrollments
-  for select using (auth.uid() = user_id);
-
--- Lesson progress: users manage their own rows
-create policy "lesson_progress: own rows" on public.lesson_progress
-  for all using (auth.uid() = user_id);
-
--- Course progress: users manage their own rows
-create policy "course_progress: own rows" on public.course_progress
-  for all using (auth.uid() = user_id);
-```
-
-## 5. Configure Auth redirect URLs
+## 4. Configure Auth redirect URLs
 
 In Supabase dashboard → Authentication → URL Configuration:
 
@@ -119,22 +35,65 @@ In Supabase dashboard → Authentication → URL Configuration:
   - `https://algo-trading-ruby.vercel.app/**`
   - `http://localhost:3001/**`
 
-## 6. Create first user
+## 5. Promote a user to admin
 
-In Supabase → Authentication → Users → Invite user (or use the signup flow once you add a registration page). To enroll a user in a course, insert a row manually:
+After the user has signed up (a row exists in `profiles`):
+
+**Option A — SQL Editor:**
+```sql
+update public.profiles
+set role = 'admin'
+where id = '<user-uuid>';
+```
+
+**Option B — Table Editor:** open `profiles`, find the row, edit the `role` cell to `admin`.
+
+Get the UUID from **Authentication → Users**.
+
+## 6. Enroll a user in a course
 
 ```sql
 insert into public.enrollments (user_id, course_id)
-values ('<user-uuid>', 'trading-algoritmico-python');
+values ('<user-uuid>', 'course-1');
 ```
 
 The `course_id` must match the `id` field in `src/data/courses.ts`.
 
-## 7. Deploy
+## 7. Online presence
+
+The frontend updates `profiles.last_seen_at` every ~60 seconds while the app is open.
+A user is considered **online** if `last_seen_at > now() - interval '5 minutes'`.
+
+```sql
+-- Who is online right now?
+select id, full_name, last_seen_at
+from public.profiles
+where last_seen_at > now() - interval '5 minutes';
+```
+
+## 8. Course time tracking
+
+The frontend inserts a row in `course_time_sessions` when a lesson is opened and
+updates `ended_at` + `duration_seconds` (capped at 1800 s) when the lesson is closed.
+
+```sql
+-- Total time per user per course
+select
+  p.full_name,
+  ts.course_id,
+  round(sum(ts.duration_seconds) / 60.0, 1) as total_minutes
+from public.course_time_sessions ts
+join public.profiles p on p.id = ts.user_id
+where ts.ended_at is not null
+group by p.full_name, ts.course_id
+order by total_minutes desc;
+```
+
+## 9. Deploy
 
 ```bash
-npm install          # installs @supabase/supabase-js
+npm install
 git add -A
-git commit -m "feat: integrate Supabase auth and progress persistence"
-git push             # triggers Vercel redeploy
+git commit -m "feat: add supabase migrations for admin, presence and time tracking"
+git push   # triggers Vercel redeploy
 ```
