@@ -87,7 +87,6 @@ export default function AdminPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
 
-  const [ready, setReady] = useState(false)
   const [users, setUsers] = useState<AdminUser[]>([])
   const [dataLoading, setDataLoading] = useState(true)
   const [togglingRoleId, setTogglingRoleId] = useState<string | null>(null)
@@ -95,84 +94,85 @@ export default function AdminPage() {
   // Track in-progress enrollment mutations: Set of "userId:courseId"
   const [pendingKeys, setPendingKeys] = useState<Set<string>>(new Set())
 
-  // ── Auth guard ──────────────────────────────────────────────────────────────
+  // ── Data fetch ──────────────────────────────────────────────────────────────
+  const fetchData = useCallback(async () => {
+    setDataLoading(true)
+    try {
+      // Get session token first (localStorage read — no network round-trip)
+      const { data: sessionData } = await supabase.auth.getSession()
+      const accessToken = sessionData.session?.access_token
+
+      // All queries in parallel: DB tables + email fetch
+      const emailFetch: Promise<{ users?: { id: string; email: string }[] }> = accessToken
+        ? fetch('/api/admin/users', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+            .then((r) => (r.ok ? r.json() : { users: [] }))
+            .catch(() => ({ users: [] }))
+        : Promise.resolve({ users: [] })
+
+      const [
+        profilesResult,
+        enrollmentsResult,
+        timeSessionsResult,
+        emailResult,
+      ] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, full_name, role, last_seen_at, created_at')
+          .order('created_at', { ascending: true }),
+        supabase.from('enrollments').select('user_id, course_id'),
+        supabase
+          .from('course_time_sessions')
+          .select('user_id, duration_seconds')
+          .not('ended_at', 'is', null),
+        emailFetch,
+      ])
+
+      const { data: profiles } = profilesResult
+      const { data: enrollments } = enrollmentsResult
+      const { data: timeSessions } = timeSessionsResult
+      const authUsers = emailResult.users ?? []
+
+      const emailMap: Record<string, string> = Object.fromEntries(
+        authUsers.map((u) => [u.id, u.email])
+      )
+
+      const timeMap: Record<string, number> = {}
+      for (const ts of timeSessions ?? []) {
+        timeMap[ts.user_id] = (timeMap[ts.user_id] ?? 0) + (ts.duration_seconds ?? 0)
+      }
+
+      const enrollMap: Record<string, string[]> = {}
+      for (const e of enrollments ?? []) {
+        if (!enrollMap[e.user_id]) enrollMap[e.user_id] = []
+        enrollMap[e.user_id].push(e.course_id)
+      }
+
+      setUsers(
+        (profiles ?? []).map((p) => ({
+          id: p.id,
+          full_name: p.full_name ?? 'Sin nombre',
+          email: emailMap[p.id] ?? '—',
+          role: p.role as 'user' | 'admin',
+          last_seen_at: p.last_seen_at,
+          created_at: p.created_at,
+          enrolledCourseIds: enrollMap[p.id] ?? [],
+          totalMinutes: Math.round((timeMap[p.id] ?? 0) / 60),
+        }))
+      )
+    } finally {
+      setDataLoading(false)
+    }
+  }, [])
+
+  // ── Auth guard + initial fetch ──────────────────────────────────────────────
   useEffect(() => {
     if (isLoading) return
     if (!user) { router.replace('/login'); return }
     if (user.role !== 'admin') { router.replace('/dashboard'); return }
-    setReady(true)
-  }, [user, isLoading, router])
-
-  // ── Data fetch ──────────────────────────────────────────────────────────────
-  const fetchData = useCallback(async () => {
-    setDataLoading(true)
-
-    const [
-      { data: profiles },
-      { data: enrollments },
-      { data: timeSessions },
-      sessionResult,
-    ] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('id, full_name, role, last_seen_at, created_at')
-        .order('created_at', { ascending: true }),
-      supabase.from('enrollments').select('user_id, course_id'),
-      supabase
-        .from('course_time_sessions')
-        .select('user_id, duration_seconds')
-        .not('ended_at', 'is', null),
-      supabase.auth.getSession(),
-    ])
-
-    // Fetch emails from server route (needs service role)
-    let emailMap: Record<string, string> = {}
-    const accessToken = sessionResult.data.session?.access_token
-    if (accessToken) {
-      try {
-        const res = await fetch('/api/admin/users', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        })
-        if (res.ok) {
-          const { users: authUsers } = await res.json()
-          emailMap = Object.fromEntries(
-            authUsers.map((u: { id: string; email: string }) => [u.id, u.email])
-          )
-        }
-      } catch {
-        // continue without emails
-      }
-    }
-
-    const timeMap: Record<string, number> = {}
-    for (const ts of timeSessions ?? []) {
-      timeMap[ts.user_id] = (timeMap[ts.user_id] ?? 0) + (ts.duration_seconds ?? 0)
-    }
-
-    const enrollMap: Record<string, string[]> = {}
-    for (const e of enrollments ?? []) {
-      if (!enrollMap[e.user_id]) enrollMap[e.user_id] = []
-      enrollMap[e.user_id].push(e.course_id)
-    }
-
-    setUsers(
-      (profiles ?? []).map((p) => ({
-        id: p.id,
-        full_name: p.full_name ?? 'Sin nombre',
-        email: emailMap[p.id] ?? '—',
-        role: p.role as 'user' | 'admin',
-        last_seen_at: p.last_seen_at,
-        created_at: p.created_at,
-        enrolledCourseIds: enrollMap[p.id] ?? [],
-        totalMinutes: Math.round((timeMap[p.id] ?? 0) / 60),
-      }))
-    )
-    setDataLoading(false)
-  }, [])
-
-  useEffect(() => {
-    if (ready) fetchData()
-  }, [ready, fetchData])
+    fetchData()
+  }, [user, isLoading, router, fetchData])
 
   // ── Role toggle ─────────────────────────────────────────────────────────────
   const toggleRole = async (target: AdminUser) => {
@@ -213,35 +213,37 @@ export default function AdminPage() {
       })
     )
 
-    const { data: session } = await supabase.auth.getSession()
-    const token = session.session?.access_token
+    try {
+      const { data: session } = await supabase.auth.getSession()
+      const token = session.session?.access_token
 
-    if (!token) {
-      // Revert
+      if (!token) {
+        setUsers((prev) => prev.map((u) => (u.id === target.id ? target : u)))
+        return
+      }
+
+      const res = await fetch('/api/admin/enrollments', {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: target.id, courseId }),
+      })
+
+      if (!res.ok) {
+        setUsers((prev) => prev.map((u) => (u.id === target.id ? target : u)))
+      }
+    } catch {
+      // Network error — revert optimistic update
       setUsers((prev) => prev.map((u) => (u.id === target.id ? target : u)))
+    } finally {
       setPendingKeys((prev) => { const s = new Set(prev); s.delete(key); return s })
-      return
     }
-
-    const res = await fetch('/api/admin/enrollments', {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId: target.id, courseId }),
-    })
-
-    if (!res.ok) {
-      // Revert on server error
-      setUsers((prev) => prev.map((u) => (u.id === target.id ? target : u)))
-    }
-
-    setPendingKeys((prev) => { const s = new Set(prev); s.delete(key); return s })
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
-  if (isLoading || !ready || dataLoading) return <LoadingScreen />
+  if (isLoading || (!user || user.role !== 'admin') || dataLoading) return <LoadingScreen />
 
   const onlineCount = users.filter((u) => isOnline(u.last_seen_at)).length
   const totalEnrollments = users.reduce((acc, u) => acc + u.enrolledCourseIds.length, 0)
