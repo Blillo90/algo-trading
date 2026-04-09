@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-slate-900 antialiased;
+  }
+}
+
+/* ─── Blog prose styles ─────────────────────────────────────────────────── */
+.prose {
+  @apply text-slate-700 leading-relaxed;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply font-semibold text-slate-900;
+}
+
+.prose h1 { @apply text-3xl mt-10 mb-4; }
+.prose h2 { @apply text-2xl mt-8 mb-3; }
+.prose h3 { @apply text-xl mt-6 mb-2; }
+.prose h4 { @apply text-lg mt-4 mb-2; }
+
+.prose p  { @apply mb-5; }
+
+.prose ul { @apply list-disc pl-5 mb-5 space-y-1.5; }
+.prose ol { @apply list-decimal pl-5 mb-5 space-y-1.5; }
+.prose li { @apply text-slate-600; }
+
+.prose a  { @apply text-slate-900 underline underline-offset-2 hover:text-slate-600 transition-colors; }
+
+.prose strong { @apply font-semibold text-slate-900; }
+.prose em     { @apply italic; }
+
+.prose blockquote {
+  @apply border-l-2 border-slate-300 pl-4 text-slate-500 italic my-6;
+}
+
+.prose hr { @apply border-slate-200 my-8; }
+
+.prose code {
+  @apply bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded text-[0.875em] font-mono;
+}
+
+.prose pre {
+  @apply bg-slate-900 text-slate-100 p-5 rounded-lg overflow-x-auto mb-6 text-sm;
+}
+
+.prose pre code {
+  @apply bg-transparent text-slate-100 p-0;
+}
